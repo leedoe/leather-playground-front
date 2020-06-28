@@ -22,7 +22,6 @@ class Posts extends React.Component {
 
   constructor(props) {
     super(props)
-    this.handleChangePage = this.handleChangePage.bind(this)
   }
 
   getDataFromParameter(dataName) {
