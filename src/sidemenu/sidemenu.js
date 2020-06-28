@@ -66,12 +66,12 @@ class SideMenu extends React.Component {
         <div className={classes.toolbar}/>
         <Divider/>
         <List>
-          <Link to='/board?page=1'>
+          <Link to='/posts?page=1'>
             <ListItem button>
               <ListItemText primary={`게시판`}/>
             </ListItem>
           </Link>
-          <Link to='/map'>
+          <Link to='/map/'>
             <ListItem button key={`지도`}>
               <ListItemText primary={`지도`}/>
             </ListItem>

@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, withStyles, Paper, TablePagination } from '@material-ui/core';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, withStyles, Paper } from '@material-ui/core';
+import { Pagination, PaginationItem } from '@material-ui/lab'
 
-import PostDetail from '../postDetail/postDetail'
 import { Link } from 'react-router-dom';
 
 
@@ -13,7 +13,7 @@ const useStyles = theme => ({
   },
 });
 
-class Board extends React.Component {
+class Posts extends React.Component {
   state = {
     count: 0,
     posts: [],
@@ -25,8 +25,24 @@ class Board extends React.Component {
     this.handleChangePage = this.handleChangePage.bind(this)
   }
 
+  getDataFromParameter(dataName) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get(dataName)
+    if(data === null) {
+      return null
+    } else {
+      return data
+    }
+  }
+
   fetchPostsFromServer() {
-    axios.get(`http://127.0.0.1:8000/api/posts/?page=${this.state.pageNumber}`).then((response) => {
+    let pageNumber = this.getDataFromParameter('page')
+    if (pageNumber == null) {
+      pageNumber = 1;
+    }
+    this.setState({pageNumber})
+
+    axios.get(`http://127.0.0.1:8000/api/posts/?page=${pageNumber}`).then((response) => {
       const posts = response.data.results;
       for(const post of posts) {
         const today = moment().format('YYYY-MM-DD')
@@ -39,8 +55,8 @@ class Board extends React.Component {
           post.created_time = created_time.format('YY-MM-DD')
         }
       }
-
-
+      
+      
       const naviCount = response.data.count % 10;
       if (naviCount === 0) {
         this.setState({navigationCount: response.data.count / 10});
@@ -50,7 +66,6 @@ class Board extends React.Component {
 
       this.setState({posts})
       this.setState({count: response.data.count})
-
       
     }).catch((e) => {
 
@@ -58,27 +73,14 @@ class Board extends React.Component {
   }
 
   componentDidMount() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    let pageNumber = urlParams.get('page');
-    if (pageNumber == null) {
-      pageNumber = 1;
-    }
-    this.setState({pageNumber})
-
     this.fetchPostsFromServer();
   }
 
   componentDidUpdate(prevPros, prevState) {
+    console.log(`${this.state.pageNumber},${prevState.pageNumber}`)
     if(this.state.pageNumber !== prevState.pageNumber) {
       this.fetchPostsFromServer();
     }
-  }
-
-  handleChangePage = (event, page) => {
-    // window.location.href=`/board?page=${page + 1}`;
-    window.history.pushState({}, '', `/board?page=${page + 1}`)
-    this.setState({pageNumber: page + 1})
   }
 
   render () {
@@ -104,7 +106,11 @@ class Board extends React.Component {
                     <TableCell scope="row" >
                       {row.pk}
                     </TableCell>
-                    <TableCell component={Link} to={`/post/${row.pk}`} align="left">{row.title}</TableCell>
+                    <TableCell align="left">
+                      <Link to={`/posts/${row.pk}`} >
+                        {row.title}
+                      </Link>
+                    </TableCell>
                     <TableCell align="right">{row.writer_name}</TableCell>
                     <TableCell align="right">{row.created_time}</TableCell>
                     <TableCell align="right">{row.views}</TableCell>
@@ -115,17 +121,28 @@ class Board extends React.Component {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
+        {/* <TablePagination
           rowsPerPageOptions={[10]}
           component="div"
           count={this.state.count}
           rowsPerPage={10}
           page={this.state.pageNumber - 1}
           onChangePage={this.handleChangePage}
-        />
+        /> */}
+        <Pagination
+              page={parseInt(this.state.pageNumber)}
+              count={this.state.navigationCount}
+              renderItem={(item) => (
+                <PaginationItem
+                  component={Link}
+                  to={`/posts?page=${item.page}`}
+                  {...item}
+                />
+              )}
+            />
       </div>
     )
   }
 }
 
-export default withStyles(useStyles, { withTheme: true }) (Board);
+export default withStyles(useStyles, { withTheme: true }) (Posts);

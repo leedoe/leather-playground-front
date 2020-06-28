@@ -67,15 +67,13 @@ class Layout extends React.Component {
         <main className={classes.content}>
           <div className={classes.toolbar}/>
         <Switch>
-          <Route path='/map'>
+          <Route path='/map/'>
             <h1>MAP</h1>
           </Route>
-          <Route path='/board'>
-            <Board />
-          </Route>
-          <Route path='/post/'>
+          <Route exact path='/posts/:pk'>
             <PostDetail/>
           </Route>
+          <Route exact path='/posts' component={Board}/>
         </Switch>
         </main>
       </div>
