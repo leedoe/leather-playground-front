@@ -22,6 +22,7 @@ class Posts extends React.Component {
 
   constructor(props) {
     super(props)
+    console.log(props.location.search)
   }
 
   getDataFromParameter(dataName) {
@@ -76,8 +77,7 @@ class Posts extends React.Component {
   }
 
   componentDidUpdate(prevPros, prevState) {
-    console.log(`${this.state.pageNumber},${prevState.pageNumber}`)
-    if(this.state.pageNumber !== prevState.pageNumber) {
+    if(this.props.location.search !== prevPros.location.search) {
       this.fetchPostsFromServer();
     }
   }
