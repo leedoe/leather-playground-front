@@ -70,9 +70,7 @@ class Layout extends React.Component {
             <Route path='/map/'>
               <h1>MAP</h1>
             </Route>
-            <Route exact path='/posts/:pk'>
-              <PostDetail/>
-            </Route>
+            <Route exact path='/posts/:pk' component={PostDetail}/>
             <Route exact path='/posts' component={Board}/>
           </Switch>
         </main>
