@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { withStyles, List, ListItem, ListItemText } from '@material-ui/core';
+import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Hidden } from '@material-ui/core';
 import { Pagination, PaginationItem } from '@material-ui/lab'
 
 import { Link } from 'react-router-dom';
@@ -11,11 +11,21 @@ const useStyles = theme => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: 8
   }
 });
 
 class Posts extends React.Component {
   state = {
+    nowLoading: true,
     count: 0,
     posts: [],
     pageNumber: 1
@@ -32,6 +42,7 @@ class Posts extends React.Component {
   }
 
   fetchPostsFromServer() {
+    this.setState({nowLoading: true})
     let pageNumber = this.getDataFromParameter('page')
     if (pageNumber == null) {
       pageNumber = 1;
@@ -62,9 +73,8 @@ class Posts extends React.Component {
 
       this.setState({posts})
       this.setState({count: response.data.count})
-      
+      this.setState({nowLoading: false})
     }).catch((e) => {
-
     });
   }
 
@@ -82,26 +92,66 @@ class Posts extends React.Component {
     const { classes } = this.props;
     return(
       <div className={classes.root}>
-        <List>
+        <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        <Hidden smUp implementation="css">
+          <List>
           {this.state.posts.map((row) => (
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
               <ListItemText 
-                primary={row.title}
-                secondary={row.writer_name}/>
+                primary={
+                  <Typography color="textPrimary">
+                    {row.title}
+                  </Typography>
+                }
+                secondary={
+                  <Typography
+                    color="textSecondary"
+                    align="right">
+                    {row.writer_name}
+                  </Typography>
+                }/>
             </ListItem>
           ))}
-        </List>
-        <Pagination
-              page={parseInt(this.state.pageNumber)}
-              count={this.state.navigationCount}
-              renderItem={(item) => (
-                <PaginationItem
-                  component={Link}
-                  to={`/posts?page=${item.page}`}
-                  {...item}
-                />
-              )}
-            />
+          </List>
+        </Hidden>
+        <Hidden xsDown implementation="css">
+          <List>
+          {this.state.posts.map((row) => (
+            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+              <ListItemText 
+                primary={
+                  <Typography
+                    color="textPrimary">
+                    {row.title}
+                  </Typography>
+                }
+                secondary={
+                  <Typography
+                    color="textSecondary"
+                    align="right">
+                    {row.created_time} / {row.writer_name}
+                  </Typography>
+                }/>
+            </ListItem>
+          ))}
+          </List>
+        </Hidden>
+        
+        <div className={classes.pagination}>
+          <Pagination
+            page={parseInt(this.state.pageNumber)}
+            count={this.state.navigationCount}
+            shape={`rounded`}
+            renderItem={(item) => (
+              <PaginationItem
+                component={Link}
+                to={`/posts?page=${item.page}`}
+                {...item}
+              />
+            )}/>
+        </div>
       </div>
     )
   }
