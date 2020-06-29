@@ -1,16 +1,17 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, withStyles, Paper } from '@material-ui/core';
+import { withStyles, List, ListItem, ListItemText } from '@material-ui/core';
 import { Pagination, PaginationItem } from '@material-ui/lab'
 
 import { Link } from 'react-router-dom';
 
 
 const useStyles = theme => ({
-  table: {
-    minWidth: 650,
-  },
+  root: {
+    width: '100%',
+    backgroundColor: theme.palette.background.paper,
+  }
 });
 
 class Posts extends React.Component {
@@ -18,11 +19,6 @@ class Posts extends React.Component {
     count: 0,
     posts: [],
     pageNumber: 1
-  }
-
-  constructor(props) {
-    super(props)
-    console.log(props.location.search)
   }
 
   getDataFromParameter(dataName) {
@@ -85,49 +81,16 @@ class Posts extends React.Component {
   render () {
     const { classes } = this.props;
     return(
-      <div>
-        <TableContainer component={Paper}>
-          <Table className={classes.table} size="small" aria-label="a dense table">
-            <TableHead>
-              <TableRow>
-                <TableCell>#</TableCell>
-                <TableCell align="right">제목</TableCell>
-                <TableCell align="right">글쓴이</TableCell>
-                <TableCell align="right">시간</TableCell>
-                <TableCell align="right">조회수</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {this.state.posts.map((row) => (
-                
-                <TableRow key={row.pk}>
-                  {/* <Link to={`/post/${row.pk}`}> */}
-                    <TableCell scope="row" >
-                      {row.pk}
-                    </TableCell>
-                    <TableCell align="left">
-                      <Link to={`/posts/${row.pk}`} >
-                        {row.title}
-                      </Link>
-                    </TableCell>
-                    <TableCell align="right">{row.writer_name}</TableCell>
-                    <TableCell align="right">{row.created_time}</TableCell>
-                    <TableCell align="right">{row.views}</TableCell>
-                  {/* </Link> */}
-                </TableRow>
-                
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {/* <TablePagination
-          rowsPerPageOptions={[10]}
-          component="div"
-          count={this.state.count}
-          rowsPerPage={10}
-          page={this.state.pageNumber - 1}
-          onChangePage={this.handleChangePage}
-        /> */}
+      <div className={classes.root}>
+        <List>
+          {this.state.posts.map((row) => (
+            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+              <ListItemText 
+                primary={row.title}
+                secondary={row.writer_name}/>
+            </ListItem>
+          ))}
+        </List>
         <Pagination
               page={parseInt(this.state.pageNumber)}
               count={this.state.navigationCount}
