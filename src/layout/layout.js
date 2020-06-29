@@ -66,15 +66,15 @@ class Layout extends React.Component {
         <SideMenu mobileOpen={this.state.mobileOpen} handleDrawerToggle={this.handleDrawerToggle}/>
         <main className={classes.content}>
           <div className={classes.toolbar}/>
-        <Switch>
-          <Route path='/map/'>
-            <h1>MAP</h1>
-          </Route>
-          <Route exact path='/posts/:pk'>
-            <PostDetail/>
-          </Route>
-          <Route exact path='/posts' component={Board}/>
-        </Switch>
+          <Switch>
+            <Route path='/map/'>
+              <h1>MAP</h1>
+            </Route>
+            <Route exact path='/posts/:pk'>
+              <PostDetail/>
+            </Route>
+            <Route exact path='/posts' component={Board}/>
+          </Switch>
         </main>
       </div>
     )
