@@ -5,11 +5,24 @@ import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 
 import Layout from './layout/layout';
+import { ThemeProvider, createMuiTheme } from '@material-ui/core';
+
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      main: '#f9dc41'
+    }
+  }
+})
 
 ReactDOM.render(
-  <BrowserRouter>
-      <Layout />
-  </BrowserRouter>,
+  
+  <ThemeProvider theme={theme}>
+    <BrowserRouter>
+        <Layout />
+    </BrowserRouter>
+  </ThemeProvider>,
   document.getElementById('root')
 );
 
