@@ -35,7 +35,6 @@ class PostDetail extends React.Component {
 
     Axios.get(`http://127.0.0.1:8000/api/posts/${this.props.match.params.pk}`).then((response) => {
       const post = response.data;
-      console.log(response)
       
       const today = moment().format('YYYY-MM-DD')
       const created_time = moment(post.created_time)
@@ -46,8 +45,6 @@ class PostDetail extends React.Component {
       } else {
         post.created_time = created_time.format('YY-MM-DD')
       }
-
-      console.log(post)
 
       this.setState({post})
       this.setState({nowLoading: false})

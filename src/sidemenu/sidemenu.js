@@ -2,25 +2,7 @@ import React from 'react';
 
 import {Link} from 'react-router-dom'
 import List from '@material-ui/core/List';
-import { ListItemText, ListItem, withStyles, Divider, Hidden, Drawer } from '@material-ui/core';
-
-// class SideMenu extends React.Component {
-//   render () {
-//     return (
-//       <nav>
-//         <div>
-//           <Link to='/'>HOME</Link>
-//         </div>
-//         <div>
-//           <Link to='/board'>BOARD</Link>
-//         </div>
-//         <div>
-//           <Link to='/map'>MAP</Link>
-//         </div>
-//       </nav>
-//     )
-//   }
-// }
+import { ListItemText, ListItem, withStyles, Divider, Hidden, Drawer, Button, Menu, MenuItem } from '@material-ui/core';
 
 
 const drawerWidth = 240;
@@ -55,15 +37,78 @@ const useStyles = theme => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  avaterdiv: {
+    padding: theme.spacing(2)
+  },
+  avater: {
+    display: "inline-block",
+  }
 });
 
 class SideMenu extends React.Component {
+  state = {
+    anchorEl: null,
+    user: {}
+  }
+
+  constructor(props) {
+    super(props)
+    this.handleClick = this.handleClick.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+    this.handleCloseWithLogout = this.handleCloseWithLogout.bind(this)
+  }
+
+  handleClick(event) {
+    this.setState({anchorEl: event.currentTarget});
+  };
+
+  handleClose() {
+    this.setState({anchorEl: null});
+  };
+
+  handleCloseWithLogout() {
+    this.setState({anchorEl: null})
+    this.props.logout()
+  }
+
   render() {
     const { classes } = this.props;
     const container = this.window !== undefined ? () => window().document.body : undefined;
     const drawer = (
       <div>
         <div className={classes.toolbar}/>
+        
+        <Divider/>
+        <div className={classes.avaterdiv}>
+          { this.props.isLoggedIn === true ?
+          <div>
+            <Button
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              onClick={this.handleClick}>
+              {this.props.user.username}
+            </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={this.state.anchorEl}
+              keepMounted
+              open={Boolean(this.state.anchorEl)}
+              onClose={this.handleClose}>
+              <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+              <MenuItem onClick={this.handleCloseWithLogout}>Logout</MenuItem>
+            </Menu>
+          </div>  
+          :
+          <Button
+              component={Link}
+              to={`/login`}
+              variant="contained" 
+              color="secondary">
+              
+            로그인
+          </Button>
+          }
+        </div>
         <Divider/>
         <List>
           <ListItem button component={Link} to={`/posts?page=1`}>

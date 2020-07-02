@@ -63,12 +63,11 @@ class Posts extends React.Component {
         }
       }
       
-      
-      const naviCount = response.data.count % 10;
+      const naviCount = response.data.count % 30;
       if (naviCount === 0) {
-        this.setState({navigationCount: response.data.count / 10});
+        this.setState({navigationCount: response.data.count / 30});
       } else {
-        this.setState({navigationCount: parseInt(response.data.count / 10, 10) + 1});
+        this.setState({navigationCount: parseInt(response.data.count / 30, 30) + 1});
       }
 
       this.setState({posts})
