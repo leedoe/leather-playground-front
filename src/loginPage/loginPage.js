@@ -1,14 +1,17 @@
 import React from 'react';
-import { TextField, withStyles, Paper, Button } from '@material-ui/core';
+import { TextField, withStyles, Paper, Button, Box } from '@material-ui/core';
 import Axios from 'axios';
 
 import { withRouter } from 'react-router-dom'
 
 const useStyles = theme => ({
   logindiv: {
-    //margin: theme.spacing(1),
-    width: theme.spacing(50),
-    padding: theme.spacing(2)
+    // width: theme.spacing(50),
+    margin: '0 auto',
+    padding: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      width: theme.spacing(50),
+    }
   },
   password: {
     //paddingTop: theme.spacing(2)
@@ -22,6 +25,10 @@ const useStyles = theme => ({
   leftButton: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2)
+  },
+  center: {
+    alignItem: 'center',
+    justify: 'center'
   }
 });
 
@@ -102,7 +109,7 @@ class LoginPage extends React.Component {
               <TextField required 
                 fullWidth={true}
                 id='id'
-                label='username'
+                label='ID'
                 onChange={this.usernameOnChange}/>
               <TextField required
                 fullWidth={true}
