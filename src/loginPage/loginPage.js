@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, withStyles, Paper, Button, Box } from '@material-ui/core';
+import { TextField, withStyles, Paper, Button } from '@material-ui/core';
 import Axios from 'axios';
 
 import { withRouter } from 'react-router-dom'
@@ -48,6 +48,8 @@ class LoginPage extends React.Component {
     this.usernameOnChange = this.usernameOnChange.bind(this)
     this.passwordOnChange = this.passwordOnChange.bind(this)
     this.onPushLoginButton = this.onPushLoginButton.bind(this)
+    this.inputPasswordKeyPress = this.inputPasswordKeyPress.bind(this)
+    this.inputIdKeyPress = this.inputIdKeyPress.bind(this)
   }
 
   usernameOnChange(e) {
@@ -84,6 +86,7 @@ class LoginPage extends React.Component {
   }
 
   onPushLoginButton(e) {
+    console.log(`${this.state.user.username}, ${this.state.user.password}`)
     Axios.post('http://127.0.0.1:8000/auth-token/', {
       username: this.state.user.username,
       password: this.state.user.password})
@@ -97,6 +100,20 @@ class LoginPage extends React.Component {
       })
   }
 
+  inputIdKeyPress(e) {
+    if(e.key === 'Enter') {
+      console.log('Enter')
+      document.getElementById('password').focus()
+      console.log(document.getElementById('password'))
+    }
+  }
+
+  inputPasswordKeyPress(e) {
+    if(e.key === 'Enter'){
+      this.onPushLoginButton()
+    }
+  }
+
   render() {
     const {classes} = this.props
     
@@ -104,19 +121,22 @@ class LoginPage extends React.Component {
       <div>
         <Paper className={classes.logindiv}>
             <form
+              onSubmit={this.onPushLoginButton}
               noValidate
               autoComplete="off">
               <TextField required 
                 fullWidth={true}
                 id='id'
                 label='ID'
-                onChange={this.usernameOnChange}/>
+                onChange={this.usernameOnChange}
+                onKeyPress={this.inputIdKeyPress}/>
               <TextField required
                 fullWidth={true}
                 id='password'
                 label='PASSWORD'
                 type='password'
-                onChange={this.passwordOnChange}/>
+                onChange={this.passwordOnChange}
+                onKeyPress={this.inputPasswordKeyPress}/>
                 <Button
                   className={classes.leftButton}
                   fullWidth={true}
