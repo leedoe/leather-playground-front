@@ -1,7 +1,9 @@
 import React from 'react';
-import { withStyles, Card, Typography, CardHeader, CardContent, Backdrop, CircularProgress } from '@material-ui/core';
+import { withStyles, Card, Typography, CardHeader, CardContent, Backdrop, CircularProgress, IconButton, Menu, MenuItem, CardActions, Button } from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Axios from 'axios';
 import moment from 'moment';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = theme => ({
   root: {
@@ -19,7 +21,11 @@ const useStyles = theme => ({
   },
   card: {
     padding: 8
-  }
+  },
+  confirmButton: {
+    // padding: theme.spacing(2),
+    marginLeft: 'auto'
+  },
 });
 
 
@@ -27,7 +33,22 @@ const useStyles = theme => ({
 class PostDetail extends React.Component {
   state = {
     post: {},
-    nowLoading: true
+    nowLoading: true,
+    isMenuOpen: false,
+  }
+
+  constructor(props) {
+    super(props)
+    this.MenuClick = this.MenuClick.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+  }
+
+  MenuClick(event) {
+    this.setState({isMenuOpen: event.currentTarget})
+  }
+
+  handleClose() {
+    this.setState({isMenuOpen: null})
   }
 
   fetchPostsFromServer() {
@@ -57,7 +78,7 @@ class PostDetail extends React.Component {
   }
   
   render() {
-    const classes = this.props;
+    const {classes} = this.props;
     return (
       <div className={classes.root}>
       {this.state.nowLoading === true ?
@@ -68,8 +89,29 @@ class PostDetail extends React.Component {
         <Card className={classes.card}>
           <CardHeader
             title={this.state.post.title}
-            subheader={`${this.state.post.created_time} / ${this.state.post.writer_name}`}>
-          </CardHeader>
+            subheader={`${this.state.post.created_time} / ${this.state.post.writer_name}`}
+            action={
+              this.props.user.pk === this.state.post.writer ?
+              <div>
+                <IconButton
+                  aria-label='settings'
+                  onClick={this.MenuClick}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={this.state.isMenuOpen}
+                  keepMounted
+                  open={Boolean(this.state.isMenuOpen)}
+                  onClose={this.handleClose}>
+                  <MenuItem onClick={this.handleCloseWithLogout}>수정</MenuItem>
+                  <MenuItem onClick={this.handleCloseWithLogout}>삭제</MenuItem>
+                </Menu>
+              </div>
+              :
+              ''
+            }
+            />
           <CardContent>
             <Typography>
               {this.state.post.content}
@@ -82,4 +124,4 @@ class PostDetail extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(PostDetail);
+export default withStyles(useStyles, { withTheme: true })(withRouter(PostDetail));
