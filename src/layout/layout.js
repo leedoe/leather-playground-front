@@ -5,7 +5,7 @@ import { Switch, Route } from 'react-router-dom';
 import SideMenu from '../sidemenu/sidemenu';
 import LeatherAppBar from '../appbar/appbar';
 import { CssBaseline, withStyles } from '@material-ui/core';
-import Board from '../board/board';
+import Board from '../posts/posts';
 import PostDetail from '../postDetail/postDetail'
 import LoginPage from '../loginPage/loginPage'
 

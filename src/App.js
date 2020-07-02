@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 
 import {BrowserRouter, Switch, Route, Link} from 'react-router-dom'
-import Board from './board/board'
+import Board from './posts/posts'
 
 function App() {
   return (
