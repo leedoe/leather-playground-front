@@ -5,7 +5,7 @@ import { Switch, Route } from 'react-router-dom';
 import SideMenu from '../sidemenu/sidemenu';
 import LeatherAppBar from '../appbar/appbar';
 import { CssBaseline, withStyles } from '@material-ui/core';
-import Board from '../posts/posts';
+import Posts from '../posts/posts';
 import PostDetail from '../postDetail/postDetail'
 import LoginPage from '../loginPage/loginPage'
 import Post from '../post/post'
@@ -117,7 +117,8 @@ class Layout extends React.Component {
             <Route exact path='/posts/:pk'>
               <PostDetail user={this.state.user}/>
             </Route>
-            <Route exact path='/posts' component={Board}>
+            <Route exact path='/posts'>
+              <Posts isLoggedIn={this.state.isLoggedIn}/>
             </Route>
             <Route exact path='/login'>
               <LoginPage login={this.login} setUserData={this.setUserData}/>
