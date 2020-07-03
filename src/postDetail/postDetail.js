@@ -4,6 +4,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Axios from 'axios';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
+import { withSnackbar } from 'notistack';
 
 const useStyles = theme => ({
   root: {
@@ -42,6 +43,7 @@ class PostDetail extends React.Component {
     this.handleClick = this.handleClick.bind(this)
     this.handleClose = this.handleClose.bind(this)
     this.onClickDeleteButton = this.onClickDeleteButton.bind(this)
+    this.onClickModifyButton = this.onClickModifyButton.bind(this)
   }
 
   handleClick(event) {
@@ -53,22 +55,24 @@ class PostDetail extends React.Component {
     this.setState({anchorEl: null})
   }
 
+  datetimeFormatting(datetime) {
+    const today = moment().format('YYYY-MM-DD')
+    const created_time = moment(datetime)
+    const createdTimeDate = created_time.format('YYYY-MM-DD')
+
+    if(today === createdTimeDate) {
+      return created_time.format('H:mm')
+    } else {
+      return created_time.format('YY-MM-DD')
+    }
+  }
+
   fetchPostsFromServer() {
     this.setState({nowLoading: true})
 
     Axios.get(`http://127.0.0.1:8000/api/posts/${this.props.match.params.pk}`).then((response) => {
       const post = response.data;
       
-      const today = moment().format('YYYY-MM-DD')
-      const created_time = moment(post.created_time)
-      const createdTimeDate = created_time.format('YYYY-MM-DD')
-
-      if(today === createdTimeDate) {
-        post.created_time = created_time.format('H:mm')
-      } else {
-        post.created_time = created_time.format('YY-MM-DD')
-      }
-
       this.setState({post})
       this.setState({nowLoading: false})
     }).catch((e) => {
@@ -101,7 +105,12 @@ class PostDetail extends React.Component {
   }
 
   onClickModifyButton() {
-    this.props.history.push('/post/22')
+    this.setState({anchorEl: null})
+    this.props.history.push({
+      pathname: `/post/${this.state.post.pk}`,
+      state: {
+        post: this.state.post,
+      }})
   }
 
   componentDidMount() {
@@ -120,7 +129,7 @@ class PostDetail extends React.Component {
         <Card className={classes.card}>
           <CardHeader
             title={this.state.post.title}
-            subheader={`${this.state.post.created_time} / ${this.state.post.writer_name}`}
+            subheader={`${this.datetimeFormatting(this.state.post.created_time)} / ${this.state.post.writer_name}`}
             action={
               this.props.user.pk === this.state.post.writer ?
               <div>
@@ -137,7 +146,7 @@ class PostDetail extends React.Component {
                   keepMounted
                   open={Boolean(this.state.anchorEl)}
                   onClose={this.handleClose}>
-                  <MenuItem onClick={this.handleCloseWithLogout}>수정</MenuItem>
+                  <MenuItem onClick={this.onClickModifyButton}>수정</MenuItem>
                   <MenuItem onClick={this.onClickDeleteButton}>삭제</MenuItem>
                 </Menu>
               </div>
@@ -146,9 +155,9 @@ class PostDetail extends React.Component {
             }
             />
           <CardContent>
-            <Typography>
-              {this.state.post.content}
-            </Typography>
+            <div dangerouslySetInnerHTML={{__html: this.state.post.content}}>
+
+            </div>
           </CardContent>
         </Card>
       }
@@ -157,4 +166,4 @@ class PostDetail extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withRouter(PostDetail));
+export default withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(PostDetail)));
