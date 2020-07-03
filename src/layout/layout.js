@@ -5,9 +5,10 @@ import { Switch, Route } from 'react-router-dom';
 import SideMenu from '../sidemenu/sidemenu';
 import LeatherAppBar from '../appbar/appbar';
 import { CssBaseline, withStyles } from '@material-ui/core';
-import Board from '../board/board';
+import Board from '../posts/posts';
 import PostDetail from '../postDetail/postDetail'
 import LoginPage from '../loginPage/loginPage'
+import Post from '../post/post'
 
 const drawerWidth = 240;
 const useStyles = theme => ({
@@ -106,8 +107,18 @@ class Layout extends React.Component {
             <Route path='/map/'>
               <h1>MAP</h1>
             </Route>
-            <Route exact path='/posts/:pk' component={PostDetail}/>
-            <Route exact path='/posts' component={Board}/>
+            <Route exact path='/post/'>
+              <Post user={this.state.user}/>
+            </Route>
+            <Route exact path='/post/:pk'>
+              <Post
+                user={this.state.user}/>
+            </Route>
+            <Route exact path='/posts/:pk'>
+              <PostDetail user={this.state.user}/>
+            </Route>
+            <Route exact path='/posts' component={Board}>
+            </Route>
             <Route exact path='/login'>
               <LoginPage login={this.login} setUserData={this.setUserData}/>
             </Route>

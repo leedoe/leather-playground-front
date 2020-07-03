@@ -31,6 +31,11 @@ class Posts extends React.Component {
     pageNumber: 1
   }
 
+  constructor(props) {
+    super(props)
+    this.dateTimeFormatting = this.dateTimeFormatting.bind(this)
+  }
+
   getDataFromParameter(dataName) {
     const urlParams = new URLSearchParams(window.location.search);
     const data = urlParams.get(dataName)
@@ -38,6 +43,18 @@ class Posts extends React.Component {
       return null
     } else {
       return data
+    }
+  }
+
+  dateTimeFormatting(datetime) {
+    const today = moment().format('YYYY-MM-DD')
+    const created_time = moment(datetime)
+    const createdTimeDate = created_time.format('YYYY-MM-DD')
+
+    if(today === createdTimeDate) {
+      return created_time.format('H:mm')
+    } else {
+      return created_time.format('YY-MM-DD')
     }
   }
 
@@ -51,17 +68,6 @@ class Posts extends React.Component {
 
     axios.get(`http://127.0.0.1:8000/api/posts/?page=${pageNumber}`).then((response) => {
       const posts = response.data.results;
-      for(const post of posts) {
-        const today = moment().format('YYYY-MM-DD')
-        const created_time = moment(post.created_time)
-        const createdTimeDate = created_time.format('YYYY-MM-DD')
-
-        if(today === createdTimeDate) {
-          post.created_time = created_time.format('H:mm')
-        } else {
-          post.created_time = created_time.format('YY-MM-DD')
-        }
-      }
       
       const naviCount = response.data.count % 30;
       if (naviCount === 0) {
@@ -130,7 +136,7 @@ class Posts extends React.Component {
                   <Typography
                     color="textSecondary"
                     align="right">
-                    {row.created_time} / {row.writer_name}
+                    {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
                   </Typography>
                 }/>
             </ListItem>
