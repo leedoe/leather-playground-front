@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import Layout from './layout/layout';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core';
+import { SnackbarProvider } from 'notistack';
 
 const theme = createMuiTheme({
   palette: {
@@ -19,9 +20,11 @@ const theme = createMuiTheme({
 ReactDOM.render(
   
   <ThemeProvider theme={theme}>
-    <BrowserRouter>
+    <SnackbarProvider maxSnack={3}>
+      <BrowserRouter>
         <Layout />
-    </BrowserRouter>
+      </BrowserRouter>
+    </SnackbarProvider>
   </ThemeProvider>,
   document.getElementById('root')
 );
