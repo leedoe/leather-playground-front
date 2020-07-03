@@ -34,21 +34,23 @@ class PostDetail extends React.Component {
   state = {
     post: {},
     nowLoading: true,
-    isMenuOpen: false,
+    anchorEl: null,
   }
 
   constructor(props) {
     super(props)
-    this.MenuClick = this.MenuClick.bind(this)
+    this.handleClick = this.handleClick.bind(this)
     this.handleClose = this.handleClose.bind(this)
+    this.onClickDeleteButton = this.onClickDeleteButton.bind(this)
   }
 
-  MenuClick(event) {
-    this.setState({isMenuOpen: event.currentTarget})
+  handleClick(event) {
+    console.log(event.currentTarget)
+    this.setState({anchorEl: event.currentTarget})
   }
 
   handleClose() {
-    this.setState({isMenuOpen: null})
+    this.setState({anchorEl: null})
   }
 
   fetchPostsFromServer() {
@@ -73,6 +75,35 @@ class PostDetail extends React.Component {
     });
   }
 
+  onClickDeleteButton() {
+    this.setState({nowLoading: true})
+    this.setState({anchorEl: null});
+    const post = this.state.post
+    post.deleted = true
+
+    const config = {
+      headers: {
+        Authorization: `token ${localStorage.getItem('token')}`
+      }
+    }
+
+    Axios.put(
+      `http://127.0.0.1:8000/api/posts/${this.props.match.params.pk}/`,
+      post,
+      config
+      ).then((response) => {
+        this.setState({nowLoading: false})
+        this.props.history.replace('/posts')
+      }).catch((e) => {
+        console.log(e)
+        this.setState({nowLoading: false})
+      })
+  }
+
+  onClickModifyButton() {
+    this.props.history.push('/post/22')
+  }
+
   componentDidMount() {
     this.fetchPostsFromServer()
   }
@@ -94,18 +125,20 @@ class PostDetail extends React.Component {
               this.props.user.pk === this.state.post.writer ?
               <div>
                 <IconButton
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
                   aria-label='settings'
-                  onClick={this.MenuClick}>
+                  onClick={this.handleClick}>
                   <MoreVertIcon />
                 </IconButton>
                 <Menu
                   id="simple-menu"
-                  anchorEl={this.state.isMenuOpen}
+                  anchorEl={this.state.anchorEl}
                   keepMounted
-                  open={Boolean(this.state.isMenuOpen)}
+                  open={Boolean(this.state.anchorEl)}
                   onClose={this.handleClose}>
                   <MenuItem onClick={this.handleCloseWithLogout}>수정</MenuItem>
-                  <MenuItem onClick={this.handleCloseWithLogout}>삭제</MenuItem>
+                  <MenuItem onClick={this.onClickDeleteButton}>삭제</MenuItem>
                 </Menu>
               </div>
               :
