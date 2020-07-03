@@ -54,7 +54,6 @@ class PostDetail extends React.Component {
   }
 
   handleClick(event) {
-    console.log(event.currentTarget)
     this.setState({anchorEl: event.currentTarget})
   }
 
@@ -106,7 +105,6 @@ class PostDetail extends React.Component {
         this.setState({nowLoading: false})
         this.props.history.replace('/posts')
       }).catch((e) => {
-        console.log(e)
         this.setState({nowLoading: false})
       })
   }

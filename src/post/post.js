@@ -102,27 +102,19 @@ class Post extends React.Component {
           this.props.history.go(-1)
         })
     } else {
-      // const today = moment().tz('Asia/Seoul').format()
-      // console.log(today)
-      // data.created_time = today
-      console.log(config)
       const test = Axios.post(
         `http://127.0.0.1:8000/api/posts/`,
         data,
         config
         ).then((response) => {
-          console.log(response)
           this.props.enqueueSnackbar('글이 정상적으로 등록되었습니다.', {variant: 'success'})
           this.props.history.replace(`/posts/${response.data.pk}`)
         }).catch((e) => {
-          console.log(e)
         })
-      console.log(test)
     }
   }
 
   onChangeTitle(e) {
-    console.log(e)
     const post = this.state.post
     post.title = e.target.value
     this.setState({post})
@@ -137,7 +129,6 @@ class Post extends React.Component {
   }
 
   render() {
-    console.log(this.state.post)
     const {classes} = this.props
     return (
       <div>

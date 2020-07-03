@@ -79,14 +79,12 @@ class LoginPage extends React.Component {
       }).then((response) => {
         const user = response.data
         localStorage.setItem('user', JSON.stringify(user))
-        console.log(user)
         this.props.setUserData(user)
         this.props.history.replace('/posts')
       })
   }
 
   onPushLoginButton(e) {
-    console.log(`${this.state.user.username}, ${this.state.user.password}`)
     Axios.post('http://127.0.0.1:8000/auth-token/', {
       username: this.state.user.username,
       password: this.state.user.password})
@@ -96,15 +94,12 @@ class LoginPage extends React.Component {
         this.props.login()
       }).catch((e) => {
         this.setState({loginError: true})
-        console.log(e)
       })
   }
 
   inputIdKeyPress(e) {
     if(e.key === 'Enter') {
-      console.log('Enter')
       document.getElementById('password').focus()
-      console.log(document.getElementById('password'))
     }
   }
 

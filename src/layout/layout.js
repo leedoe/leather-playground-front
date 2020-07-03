@@ -80,7 +80,6 @@ class Layout extends React.Component {
   }
 
   setUserData(user) {
-    console.log(user)
     this.setState({user})
   }
 
