@@ -1,7 +1,7 @@
 import React from 'react'
-import ReactQuill, {Quill} from 'react-quill'
+import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { Card, CardHeader, CardContent, withStyles, TextField, Button, CardActions, Snackbar } from '@material-ui/core'
+import { Card, CardContent, withStyles, TextField, Button, CardActions } from '@material-ui/core'
 
 import '../post/post.css'
 import { withRouter } from 'react-router-dom'
