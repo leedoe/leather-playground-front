@@ -64,8 +64,13 @@ class Post extends React.Component {
   }
 
   componentDidMount() {
+    console.log(`${this.props.user.pk}, ${JSON.parse(localStorage.getItem('user')).pk}`)
+    if(this.props.user.pk !== JSON.parse(localStorage.getItem('user')).pk) {
+      this.props.enqueueSnackbar('비정상적인 접근입니다.', {variant: 'error'})
+      this.props.history.replace(`/posts/`)
+    }
     // this.setState({enqueueSnackbar : useSnackbar()})
-    if(this.props.location.state.post !== undefined) {
+    if(this.props.location.state !== undefined && this.props.location.state.post !== undefined) {
       this.setState({ modify: true })
       this.setState({post: this.props.location.state.post})
       this.setState({value: this.props.location.state.post.content})
@@ -81,6 +86,7 @@ class Post extends React.Component {
 
   sendData() {
     const data = this.state.post
+    console.log(data.content)
     const config = {
       headers: {
         Authorization: `token ${localStorage.getItem('token')}`
@@ -95,8 +101,9 @@ class Post extends React.Component {
         ).then((response) => {
           console.log(response)
           this.setState({open: true})
-          this.props.enqueueSnackbar('test', {variant: 'success'})
-          this.props.history.replace(`/posts/${this.state.post.pk}/`)
+          this.props.enqueueSnackbar('글이 정상적으로 수정되었습니다.', {variant: 'success'})
+          // this.props.history.replace(`/posts/${this.state.post.pk}/`)
+          this.props.history.go(-1)
         })
     }
   }
