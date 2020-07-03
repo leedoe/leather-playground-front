@@ -1,10 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Hidden } from '@material-ui/core';
+import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Hidden, Fab } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+
 import { Pagination, PaginationItem } from '@material-ui/lab'
 
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 
 const useStyles = theme => ({
@@ -27,6 +29,14 @@ const useStyles = theme => ({
     display: 'flex',
     justifyContent: 'center',
     padding: 8
+  },
+  floatingButton: {
+    margin: 0,
+    top: 'auto',
+    right: 20,
+    bottom: 20,
+    left: 'auto',
+    position: 'fixed',
   }
 });
 
@@ -164,9 +174,21 @@ class Posts extends React.Component {
               />
             )}/>
         </div>
+        {
+          this.props.isLoggedIn === true ?
+          <Fab 
+            className={classes.floatingButton}
+            color="secondary"
+            aria-label="edit"
+            component={Link}
+            to={`/post/`}>
+            <EditIcon/>
+          </Fab> :
+          ''
+        }
       </div>
     )
   }
 }
 
-export default withStyles(useStyles, { withTheme: true }) (Posts);
+export default withStyles(useStyles, { withTheme: true })(withRouter(Posts));
