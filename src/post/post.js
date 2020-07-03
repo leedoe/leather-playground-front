@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactQuill from 'react-quill'
+import moment from 'moment-timezone';
 import 'react-quill/dist/quill.snow.css'
 import { Card, CardContent, withStyles, TextField, Button, CardActions } from '@material-ui/core'
 
@@ -26,7 +27,7 @@ const useStyles = theme => ({
 
 class Post extends React.Component {
   state = {
-    value: '',
+    // value: '',
     modify: false,
     post: {
       title: '',
@@ -35,12 +36,12 @@ class Post extends React.Component {
       writer: '',
       category: 1,
       noticed: false,
-      created_time: '',
       views: 0,
       deleted: false
     },
     open: false,
-    enqueueSnackbar: ''
+    enqueueSnackbar: '',
+    defaultTitle: ''
   }
 
   constructor(props) {
@@ -48,13 +49,13 @@ class Post extends React.Component {
     this.valueOnChange = this.valueOnChange.bind(this)
     this.onClickSaveButton = this.onClickSaveButton.bind(this)
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this)
+    this.onChangeTitle = this.onChangeTitle.bind(this)
   }
 
   valueOnChange(e) {
     const post = this.state.post
     post.content = e
     this.setState({post})
-    console.log(e)
   }
 
   OnChangeContent(e) {
@@ -64,7 +65,6 @@ class Post extends React.Component {
   }
 
   componentDidMount() {
-    console.log(`${this.props.user.pk}, ${JSON.parse(localStorage.getItem('user')).pk}`)
     if(this.props.user.pk !== JSON.parse(localStorage.getItem('user')).pk) {
       this.props.enqueueSnackbar('비정상적인 접근입니다.', {variant: 'error'})
       this.props.history.replace(`/posts/`)
@@ -73,20 +73,18 @@ class Post extends React.Component {
     if(this.props.location.state !== undefined && this.props.location.state.post !== undefined) {
       this.setState({ modify: true })
       this.setState({post: this.props.location.state.post})
-      this.setState({value: this.props.location.state.post.content})
-      console.log(this.props.location.state.post.content)
+      // this.setState({value: this.props.location.state.post.content})
+      this.setState({defaultTitle: this.props.location.state.post.title})
     }else {
       const post = this.state.post
-      post.writer_name = this.props.user.name
+      post.writer_name = this.props.user.username
       post.writer = this.props.user.pk
       this.setState({post})
     }
-    console.log(this.props.user)
   }
 
   sendData() {
     const data = this.state.post
-    console.log(data.content)
     const config = {
       headers: {
         Authorization: `token ${localStorage.getItem('token')}`
@@ -99,13 +97,35 @@ class Post extends React.Component {
         data,
         config
         ).then((response) => {
-          console.log(response)
-          this.setState({open: true})
           this.props.enqueueSnackbar('글이 정상적으로 수정되었습니다.', {variant: 'success'})
           // this.props.history.replace(`/posts/${this.state.post.pk}/`)
           this.props.history.go(-1)
         })
+    } else {
+      // const today = moment().tz('Asia/Seoul').format()
+      // console.log(today)
+      // data.created_time = today
+      console.log(config)
+      const test = Axios.post(
+        `http://127.0.0.1:8000/api/posts/`,
+        data,
+        config
+        ).then((response) => {
+          console.log(response)
+          this.props.enqueueSnackbar('글이 정상적으로 등록되었습니다.', {variant: 'success'})
+          this.props.history.replace(`/posts/${response.data.pk}`)
+        }).catch((e) => {
+          console.log(e)
+        })
+      console.log(test)
     }
+  }
+
+  onChangeTitle(e) {
+    console.log(e)
+    const post = this.state.post
+    post.title = e.target.value
+    this.setState({post})
   }
 
   onClickSaveButton() {
@@ -117,6 +137,7 @@ class Post extends React.Component {
   }
 
   render() {
+    console.log(this.state.post)
     const {classes} = this.props
     return (
       <div>
@@ -127,6 +148,7 @@ class Post extends React.Component {
               id="post-title"
               label="제목"
               value={this.state.post.title}
+              onChange={this.onChangeTitle}
               fullWidth={true}/>
           </CardContent>
           <ReactQuill
