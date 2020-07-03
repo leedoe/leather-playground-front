@@ -110,6 +110,10 @@ class Layout extends React.Component {
             <Route exact path='/post/'>
               <Post user={this.state.user}/>
             </Route>
+            <Route exact path='/post/:pk'>
+              <Post
+                user={this.state.user}/>
+            </Route>
             <Route exact path='/posts/:pk'>
               <PostDetail user={this.state.user}/>
             </Route>
