@@ -8,8 +8,15 @@ import { withSnackbar } from 'notistack';
 
 const useStyles = theme => ({
   root: {
-    width: '100%',
+    // width: '100%',
     backgroundColor: theme.palette.background.paper,
+    margin: '0 auto',
+    [theme.breakpoints.up('lg')]: {
+      width: "70%"
+    },
+    [theme.breakpoints.up('md')]: {
+      width: "80%"
+    }
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
