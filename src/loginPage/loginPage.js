@@ -1,8 +1,9 @@
 import React from 'react';
-import { TextField, withStyles, Paper, Button } from '@material-ui/core';
+import { TextField, withStyles, Paper, Button, Backdrop, CircularProgress } from '@material-ui/core';
 import Axios from 'axios';
 
 import { withRouter } from 'react-router-dom'
+import { withSnackbar } from 'notistack';
 
 const useStyles = theme => ({
   logindiv: {
@@ -29,6 +30,10 @@ const useStyles = theme => ({
   center: {
     alignItem: 'center',
     justify: 'center'
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 999,
+    color: '#fff',
   }
 });
 
@@ -40,6 +45,7 @@ class LoginPage extends React.Component {
       password: ''
     }, 
     loginError: false,
+    nowLoading: false
   }
 
   constructor(props) {
@@ -65,6 +71,7 @@ class LoginPage extends React.Component {
   }
 
   getAndSetUserdata() {
+    this.setState({nowLoading: true})
     const token = localStorage.getItem('token')
     if(token === null) {
       return
@@ -81,19 +88,26 @@ class LoginPage extends React.Component {
         localStorage.setItem('user', JSON.stringify(user))
         this.props.setUserData(user)
         this.props.history.replace('/posts')
+      }).catch((e) => {
+        
       })
   }
 
   onPushLoginButton(e) {
+    this.setState({nowLoading: true})
     Axios.post('http://127.0.0.1:8000/auth-token/', {
       username: this.state.user.username,
       password: this.state.user.password})
       .then((response) => {
+        this.setState({nowLoading: false})
         localStorage.setItem('token', response.data.token)
         this.getAndSetUserdata()
         this.props.login()
+        this.props.enqueueSnackbar('정상적으로 로그인 되었습니다.', {variant: 'success'})
       }).catch((e) => {
+        this.setState({nowLoading: false})
         this.setState({loginError: true})
+        this.props.enqueueSnackbar('아이디 비밀번호를 확인해주세요.', {variant: 'error'})
       })
   }
 
@@ -114,6 +128,9 @@ class LoginPage extends React.Component {
     
     return (
       <div>
+        <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Paper className={classes.logindiv}>
             <form
               onSubmit={this.onPushLoginButton}
@@ -154,4 +171,4 @@ class LoginPage extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withRouter(LoginPage));
+export default withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(LoginPage)));

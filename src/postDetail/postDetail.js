@@ -103,8 +103,10 @@ class PostDetail extends React.Component {
       config
       ).then((response) => {
         this.setState({nowLoading: false})
+        this.props.enqueueSnackbar('정삭적으로 삭제되었습니다.', {variant: 'success'})
         this.props.history.replace('/posts')
       }).catch((e) => {
+        this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
         this.setState({nowLoading: false})
       })
   }

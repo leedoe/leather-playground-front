@@ -2,7 +2,7 @@ import React from 'react'
 import ReactQuill from 'react-quill'
 import moment from 'moment-timezone';
 import 'react-quill/dist/quill.snow.css'
-import { Card, CardContent, withStyles, TextField, Button, CardActions } from '@material-ui/core'
+import { Card, CardContent, withStyles, TextField, Button, CardActions, Backdrop, CircularProgress } from '@material-ui/core'
 
 import '../post/post.css'
 import { withRouter } from 'react-router-dom'
@@ -22,6 +22,10 @@ const useStyles = theme => ({
     [theme.breakpoints.up('md')]: {
       width: "80%"
     }
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 999,
+    color: '#fff',
   }
 });
 
@@ -41,7 +45,8 @@ class Post extends React.Component {
     },
     open: false,
     enqueueSnackbar: '',
-    defaultTitle: ''
+    defaultTitle: '',
+    nowLoading: false
   }
 
   constructor(props) {
@@ -84,6 +89,7 @@ class Post extends React.Component {
   }
 
   sendData() {
+    this.setState({nowLoading: true})
     const data = this.state.post
     const config = {
       headers: {
@@ -97,19 +103,26 @@ class Post extends React.Component {
         data,
         config
         ).then((response) => {
+          this.setState({nowLoading: false})
           this.props.enqueueSnackbar('글이 정상적으로 수정되었습니다.', {variant: 'success'})
           // this.props.history.replace(`/posts/${this.state.post.pk}/`)
           this.props.history.go(-1)
+        }).catch((e) => {
+          this.setState({nowLoading: false})
+          this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
         })
     } else {
-      const test = Axios.post(
+      Axios.post(
         `http://127.0.0.1:8000/api/posts/`,
         data,
         config
         ).then((response) => {
+          this.setState({nowLoading: false})
           this.props.enqueueSnackbar('글이 정상적으로 등록되었습니다.', {variant: 'success'})
           this.props.history.replace(`/posts/${response.data.pk}`)
         }).catch((e) => {
+          this.setState({nowLoading: false})
+          this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
         })
     }
   }
@@ -132,6 +145,9 @@ class Post extends React.Component {
     const {classes} = this.props
     return (
       <div>
+        <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Card className={classes.card}>
           <CardContent>
             <TextField

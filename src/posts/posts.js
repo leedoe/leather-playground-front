@@ -7,6 +7,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Pagination, PaginationItem } from '@material-ui/lab'
 
 import { Link, withRouter } from 'react-router-dom';
+import { withSnackbar } from 'notistack';
 
 
 const useStyles = theme => ({
@@ -97,6 +98,8 @@ class Posts extends React.Component {
       this.setState({count: response.data.count})
       this.setState({nowLoading: false})
     }).catch((e) => {
+      this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
+      this.setState({nowLoading: false})
     });
   }
 
@@ -191,4 +194,4 @@ class Posts extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withRouter(Posts));
+export default withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(Posts)));
