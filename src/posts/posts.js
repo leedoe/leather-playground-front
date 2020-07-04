@@ -127,7 +127,7 @@ class Posts extends React.Component {
               <ListItemText 
                 primary={
                   <Typography color="textPrimary">
-                    {row.title}
+                    {row.title}[{row.comment_count}]
                   </Typography>
                 }
                 secondary={
@@ -149,7 +149,7 @@ class Posts extends React.Component {
                 primary={
                   <Typography
                     color="textPrimary">
-                    {row.title}
+                    {row.title} [{row.comment_count}]
                   </Typography>
                 }
                 secondary={
