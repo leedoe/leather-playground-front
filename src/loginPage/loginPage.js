@@ -2,7 +2,7 @@ import React from 'react';
 import { TextField, withStyles, Paper, Button, Backdrop, CircularProgress } from '@material-ui/core';
 import Axios from 'axios';
 
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { withSnackbar } from 'notistack';
 
 const useStyles = theme => ({
@@ -159,6 +159,8 @@ class LoginPage extends React.Component {
                   로그인
                 </Button>
                 <Button
+                  component={Link}
+                  to={`/users/register/`}
                   fullWidth={true}
                   variant="contained" 
                   color="primary">

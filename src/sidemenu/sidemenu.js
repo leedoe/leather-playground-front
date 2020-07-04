@@ -86,7 +86,7 @@ class SideMenu extends React.Component {
               aria-controls="simple-menu"
               aria-haspopup="true"
               onClick={this.handleClick}>
-              {this.props.user.username}
+              {this.props.user.name}
             </Button>
             <Menu
               id="simple-menu"

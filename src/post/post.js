@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactQuill from 'react-quill'
-import moment from 'moment-timezone';
 import 'react-quill/dist/quill.snow.css'
 import { Card, CardContent, withStyles, TextField, Button, CardActions, Backdrop, CircularProgress } from '@material-ui/core'
 

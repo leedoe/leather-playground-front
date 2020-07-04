@@ -9,6 +9,7 @@ import Posts from '../posts/posts';
 import PostDetail from '../postDetail/postDetail'
 import LoginPage from '../loginPage/loginPage'
 import Post from '../post/post'
+import RegisterUser from '../registerUser/registerUser';
 
 const drawerWidth = 240;
 const useStyles = theme => ({
@@ -116,11 +117,14 @@ class Layout extends React.Component {
             <Route exact path='/posts/:pk'>
               <PostDetail user={this.state.user}/>
             </Route>
-            <Route exact path='/posts'>
+            <Route exact path='/posts/'>
               <Posts isLoggedIn={this.state.isLoggedIn}/>
             </Route>
-            <Route exact path='/login'>
+            <Route exact path='/login/'>
               <LoginPage login={this.login} setUserData={this.setUserData}/>
+            </Route>
+            <Route path='/users/register/'>
+              <RegisterUser setUserData={this.setUserData}/>
             </Route>
           </Switch>
         </main>
