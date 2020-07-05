@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Hidden, Fab } from '@material-ui/core';
+import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Hidden, Fab, Grid, Divider } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 
 import { Pagination, PaginationItem } from '@material-ui/lab'
@@ -145,7 +145,7 @@ class Posts extends React.Component {
           <List>
           {this.state.posts.map((row) => (
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              <ListItemText 
+              {/* <ListItemText 
                 primary={
                   <Typography
                     color="textPrimary">
@@ -158,12 +158,29 @@ class Posts extends React.Component {
                     align="right">
                     {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
                   </Typography>
-                }/>
+                }/> */}
+              <Grid
+                className={classes.subtitle}
+                container
+                justify='space-between'>
+                <Typography
+                  display='inline'
+                  align='left'
+                  color='textSecondary'>
+                  {row.title}
+                </Typography>
+                <Typography
+                  display='inline'
+                  align='right'
+                  color='textSecondary'>
+                    {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
+                </Typography>
+              </Grid>
             </ListItem>
           ))}
           </List>
         </Hidden>
-        
+        <Divider/>
         <div className={classes.pagination}>
           <Pagination
             page={parseInt(this.state.pageNumber)}
