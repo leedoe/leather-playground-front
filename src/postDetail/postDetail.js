@@ -130,40 +130,6 @@ class PostDetail extends React.Component {
           <CircularProgress color="inherit" />
         </Backdrop>
       {this.state.nowLoading === false ?
-        // <Card className={classes.card}>
-        //   <CardHeader
-        //     title={this.state.post.title}
-        //     subheader={`${this.datetimeFormatting(this.state.post.created_time)} / ${this.state.post.writer_name}`}
-        //     action={
-        //       this.props.user.pk === this.state.post.writer ?
-        //       <div>
-        //         <IconButton
-        //           aria-controls="simple-menu"
-        //           aria-haspopup="true"
-        //           aria-label='settings'
-        //           onClick={this.handleClick}>
-        //           <MoreVertIcon />
-        //         </IconButton>
-        //         <Menu
-        //           id="simple-menu"
-        //           anchorEl={this.state.anchorEl}
-        //           keepMounted
-        //           open={Boolean(this.state.anchorEl)}
-        //           onClose={this.handleClose}>
-        //           <MenuItem onClick={this.onClickModifyButton}>수정</MenuItem>
-        //           <MenuItem onClick={this.onClickDeleteButton}>삭제</MenuItem>
-        //         </Menu>
-        //       </div>
-        //       :
-        //       ''
-        //     }
-        //     />
-        //   <CardContent>
-        //     <div dangerouslySetInnerHTML={{__html: this.state.post.content}}>
-
-        //     </div>
-        //   </CardContent>
-        // </Card>
         <Paper className={classes.card}>
           <div>
             <Typography variant='h4'>
