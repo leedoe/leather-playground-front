@@ -62,21 +62,18 @@ class RegisterUser extends React.Component {
   usernameOnChange (e) {
     const user = this.state.user
     user.username = e.target.value
-    console.log(user)
     this.setState({user})
   }
 
   passwordOnChange (e) {
     const user = this.state.user
     user.password = e.target.value
-    console.log(user)
     this.setState({user})
   }
 
   nameOnChange (e) {
     const user = this.state.user
     user.name = e.target.value
-    console.log(user)
     this.setState({user})
   }
 
@@ -90,22 +87,17 @@ class RegisterUser extends React.Component {
       }
     })
     const data = this.state.user
-    console.log(data)
     Axios.post(
       'http://127.0.0.1:8000/api/users/',
       data
       ).then((response) => {
-        console.log(response)
         this.setState({nowLoading: false})
         this.props.history.replace('/login/')
       }).catch((error) => {
         this.setState({nowLoading: false})
-        console.log(error.response)
         for(const data in error.response.data) {
-          console.log(data)
           const userTextField = this.state.userTextField
           userTextField[data] = true
-          console.log(userTextField)
           this.setState({userTextField})
           let message = error.response.data[data][0]
           message = message.replace('사용자 이름은', '아이디는')

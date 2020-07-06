@@ -181,7 +181,6 @@ class PostDetail extends React.Component {
   }
 
   onChangeComment(e) {
-    console.log(this.state.writedComment)
     this.setState({writedComment: e.target.value})
   }
   
