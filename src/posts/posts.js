@@ -145,20 +145,6 @@ class Posts extends React.Component {
           <List>
           {this.state.posts.map((row) => (
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              {/* <ListItemText 
-                primary={
-                  <Typography
-                    color="textPrimary">
-                    {row.title} [{row.comment_count}]
-                  </Typography>
-                }
-                secondary={
-                  <Typography
-                    color="textSecondary"
-                    align="right">
-                    {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
-                  </Typography>
-                }/> */}
               <Grid
                 className={classes.subtitle}
                 container
@@ -167,7 +153,7 @@ class Posts extends React.Component {
                   display='inline'
                   align='left'
                   color='textSecondary'>
-                  {row.title}
+                  {row.title} [{row.comment_count}]
                 </Typography>
                 <Typography
                   display='inline'

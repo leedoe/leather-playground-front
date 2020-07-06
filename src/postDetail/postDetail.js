@@ -1,6 +1,5 @@
 import React from 'react';
-import { withStyles, Card, CardHeader, CardContent, Backdrop, CircularProgress, IconButton, Menu, MenuItem, Paper, Typography, Grid, Divider } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { withStyles, Backdrop, CircularProgress, Paper, Typography, Grid, Divider, List, TextField, Button } from '@material-ui/core';
 import Axios from 'axios';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
@@ -31,6 +30,22 @@ const useStyles = theme => ({
   },
   commentDiv: {
     paddingTop: theme.spacing(1)
+  },
+  commentBottom: {
+    paddingBottom: theme.spacing(1)
+  },
+  commenTextarea: {
+    width: "100%"
+  },
+  confirmDiv: {
+    paddingTop: theme.spacing(1)
+  },
+  confirmButton: {
+    display: 'flex',
+    marginLeft: 'auto'
+  },
+  deleteComment: {
+    marginLeft: theme.spacing(2)
   }
 });
 
@@ -39,8 +54,10 @@ const useStyles = theme => ({
 class PostDetail extends React.Component {
   state = {
     post: {},
+    comments: [],
     nowLoading: true,
     anchorEl: null,
+    writedComment: ''
   }
 
   constructor(props) {
@@ -49,6 +66,10 @@ class PostDetail extends React.Component {
     this.handleClose = this.handleClose.bind(this)
     this.onClickDeleteButton = this.onClickDeleteButton.bind(this)
     this.onClickModifyButton = this.onClickModifyButton.bind(this)
+    this.onChangeComment = this.onChangeComment.bind(this)
+    this.onClickConfirmButton = this.onClickConfirmButton.bind(this)
+    this.deleteComment = this.deleteComment.bind(this)
+    this.fetchCommentFromServer = this.fetchCommentFromServer.bind(this)
   }
 
   handleClick(event) {
@@ -83,6 +104,18 @@ class PostDetail extends React.Component {
     });
   }
 
+  fetchCommentFromServer() {
+    this.setState({nowLoading: true})
+
+    Axios.get(`http://127.0.0.1:8000/api/comments/?post=${this.props.match.params.pk}`).then((response) => {
+      const comments = response.data;
+      
+      this.setState({comments})
+      this.setState({nowLoading: false})
+    }).catch((e) => {
+    });
+  }
+
   onClickDeleteButton() {
     this.setState({nowLoading: true})
     this.setState({anchorEl: null});
@@ -109,6 +142,77 @@ class PostDetail extends React.Component {
       })
   }
 
+  onClickConfirmButton() {
+    this.setState({nowLoading: true})
+
+    const data = {
+      post: this.state.post.pk,
+      content: this.state.writedComment,
+      writer_name: JSON.parse(localStorage.getItem('user')).name,
+      writer: JSON.parse(localStorage.getItem('user')).pk
+    }
+
+    const config = {
+      headers: {
+        Authorization: `token ${localStorage.getItem('token')}`
+      }
+    }
+
+    Axios.post(
+      `http://127.0.0.1:8000/api/comments/`,
+      data,
+      config
+      ).then((response) => {
+        this.setState({nowLoading: false})
+        this.props.enqueueSnackbar('정삭적으로 등록되었습니다.', {variant: 'success'})
+        // this.props.history.replace(`/posts/${this.props.match.params.pk}`)
+        this.fetchCommentFromServer()
+      }).catch((e) => {
+        this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
+        this.setState({nowLoading: false})
+      })
+  }
+
+  deleteComment(inputComment) {
+    this.setState({nowLoading: true})
+    const comment = inputComment
+    console.log(comment)
+    comment.deleted = true
+    console.log(comment)
+
+    const config = {
+      headers: {
+        Authorization: `token ${localStorage.getItem('token')}`
+      }
+    }
+
+    Axios.put(
+      `http://127.0.0.1:8000/api/comments/${comment.pk}/`,
+      comment,
+      config
+      ).then((response) => {
+        this.setState({nowLoading: false})
+        this.props.enqueueSnackbar('정삭적으로 삭제되었습니다.', {variant: 'success'})
+        // this.props.history.replace(`/posts/${this.props.match.params.pk}`)
+        this.fetchCommentFromServer()
+      }).catch((e) => {
+        this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
+        this.setState({nowLoading: false})
+      })
+  }
+
+  dateTimeFormatting(datetime) {
+    const today = moment().format('YYYY-MM-DD')
+    const created_time = moment(datetime)
+    const createdTimeDate = created_time.format('YYYY-MM-DD')
+
+    if(today === createdTimeDate) {
+      return created_time.format('H:mm')
+    } else {
+      return created_time.format('YY-MM-DD')
+    }
+  }
+
   onClickModifyButton() {
     this.setState({anchorEl: null})
     this.props.history.push({
@@ -120,6 +224,11 @@ class PostDetail extends React.Component {
 
   componentDidMount() {
     this.fetchPostsFromServer()
+    this.fetchCommentFromServer()
+  }
+
+  onChangeComment(e) {
+    this.setState({writedComment: e.target.value})
   }
   
   render() {
@@ -130,40 +239,6 @@ class PostDetail extends React.Component {
           <CircularProgress color="inherit" />
         </Backdrop>
       {this.state.nowLoading === false ?
-        // <Card className={classes.card}>
-        //   <CardHeader
-        //     title={this.state.post.title}
-        //     subheader={`${this.datetimeFormatting(this.state.post.created_time)} / ${this.state.post.writer_name}`}
-        //     action={
-        //       this.props.user.pk === this.state.post.writer ?
-        //       <div>
-        //         <IconButton
-        //           aria-controls="simple-menu"
-        //           aria-haspopup="true"
-        //           aria-label='settings'
-        //           onClick={this.handleClick}>
-        //           <MoreVertIcon />
-        //         </IconButton>
-        //         <Menu
-        //           id="simple-menu"
-        //           anchorEl={this.state.anchorEl}
-        //           keepMounted
-        //           open={Boolean(this.state.anchorEl)}
-        //           onClose={this.handleClose}>
-        //           <MenuItem onClick={this.onClickModifyButton}>수정</MenuItem>
-        //           <MenuItem onClick={this.onClickDeleteButton}>삭제</MenuItem>
-        //         </Menu>
-        //       </div>
-        //       :
-        //       ''
-        //     }
-        //     />
-        //   <CardContent>
-        //     <div dangerouslySetInnerHTML={{__html: this.state.post.content}}>
-
-        //     </div>
-        //   </CardContent>
-        // </Card>
         <Paper className={classes.card}>
           <div>
             <Typography variant='h4'>
@@ -195,9 +270,70 @@ class PostDetail extends React.Component {
           <Divider/>
           <div className={classes.commentDiv}>
             <Typography variant='h5'>
-              Comment
+              댓글
             </Typography>
           </div>
+          <List>
+          {this.state.comments.map((comment) => (
+            // <ListItem 
+            //   key={comment.pk}>
+            <div key={comment.pk}>
+              <Grid
+                className={classes.subtitle}
+                container
+                justify='space-between'>
+                <Typography
+                  display='inline'
+                  align='left'>
+                  {comment.writer_name}
+                  {comment.writer === this.props.user.pk ?
+                    <span
+                      className={classes.deleteComment}
+                      onClick={() => this.deleteComment(comment)}>
+                    삭제
+                    </span>:
+                    ''
+                  }
+                </Typography>
+                <Typography
+                  display='inline'
+                  align='right'
+                  color='textSecondary'>
+                    {this.dateTimeFormatting(comment.created_time)}
+                </Typography>
+              </Grid>
+              <Typography className={classes.commentBottom}>
+                {comment.content}
+              </Typography>
+              
+              <Divider/>
+            </div>
+            // </ListItem>
+          ))}
+          </List>
+
+          <div>
+            <TextField
+              className={classes.commenTextarea}
+              id="outlined-multiline-static"
+              label="댓글"
+              multiline
+              rows={4}
+              defaultValue=""
+              onChange={this.onChangeComment}
+              variant="outlined"/>
+            
+            <div className={classes.confirmDiv}>
+              <Button
+                className={classes.confirmButton}
+                onClick={this.onClickConfirmButton}
+                color="primary"
+                variant="contained">
+                  등록
+              </Button>
+            </div>
+          </div>
+          
         </Paper>
         :
         ''
