@@ -43,6 +43,9 @@ const useStyles = theme => ({
   confirmButton: {
     display: 'flex',
     marginLeft: 'auto'
+  },
+  deleteComment: {
+    marginLeft: theme.spacing(2)
   }
 });
 
@@ -51,6 +54,7 @@ const useStyles = theme => ({
 class PostDetail extends React.Component {
   state = {
     post: {},
+    comments: [],
     nowLoading: true,
     anchorEl: null,
     writedComment: ''
@@ -64,6 +68,8 @@ class PostDetail extends React.Component {
     this.onClickModifyButton = this.onClickModifyButton.bind(this)
     this.onChangeComment = this.onChangeComment.bind(this)
     this.onClickConfirmButton = this.onClickConfirmButton.bind(this)
+    this.deleteComment = this.deleteComment.bind(this)
+    this.fetchCommentFromServer = this.fetchCommentFromServer.bind(this)
   }
 
   handleClick(event) {
@@ -93,6 +99,18 @@ class PostDetail extends React.Component {
       const post = response.data;
       
       this.setState({post})
+      this.setState({nowLoading: false})
+    }).catch((e) => {
+    });
+  }
+
+  fetchCommentFromServer() {
+    this.setState({nowLoading: true})
+
+    Axios.get(`http://127.0.0.1:8000/api/comments/?post=${this.props.match.params.pk}`).then((response) => {
+      const comments = response.data;
+      
+      this.setState({comments})
       this.setState({nowLoading: false})
     }).catch((e) => {
     });
@@ -148,7 +166,35 @@ class PostDetail extends React.Component {
         this.setState({nowLoading: false})
         this.props.enqueueSnackbar('정삭적으로 등록되었습니다.', {variant: 'success'})
         // this.props.history.replace(`/posts/${this.props.match.params.pk}`)
-        this.fetchPostsFromServer()
+        this.fetchCommentFromServer()
+      }).catch((e) => {
+        this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
+        this.setState({nowLoading: false})
+      })
+  }
+
+  deleteComment(inputComment) {
+    this.setState({nowLoading: true})
+    const comment = inputComment
+    console.log(comment)
+    comment.deleted = true
+    console.log(comment)
+
+    const config = {
+      headers: {
+        Authorization: `token ${localStorage.getItem('token')}`
+      }
+    }
+
+    Axios.put(
+      `http://127.0.0.1:8000/api/comments/${comment.pk}/`,
+      comment,
+      config
+      ).then((response) => {
+        this.setState({nowLoading: false})
+        this.props.enqueueSnackbar('정삭적으로 삭제되었습니다.', {variant: 'success'})
+        // this.props.history.replace(`/posts/${this.props.match.params.pk}`)
+        this.fetchCommentFromServer()
       }).catch((e) => {
         this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
         this.setState({nowLoading: false})
@@ -178,6 +224,7 @@ class PostDetail extends React.Component {
 
   componentDidMount() {
     this.fetchPostsFromServer()
+    this.fetchCommentFromServer()
   }
 
   onChangeComment(e) {
@@ -227,7 +274,7 @@ class PostDetail extends React.Component {
             </Typography>
           </div>
           <List>
-          {this.state.post.comment_set.map((comment) => (
+          {this.state.comments.map((comment) => (
             // <ListItem 
             //   key={comment.pk}>
             <div key={comment.pk}>
@@ -239,6 +286,14 @@ class PostDetail extends React.Component {
                   display='inline'
                   align='left'>
                   {comment.writer_name}
+                  {comment.writer === this.props.user.pk ?
+                    <span
+                      className={classes.deleteComment}
+                      onClick={() => this.deleteComment(comment)}>
+                    삭제
+                    </span>:
+                    ''
+                  }
                 </Typography>
                 <Typography
                   display='inline'
