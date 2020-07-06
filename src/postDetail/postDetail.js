@@ -46,6 +46,9 @@ const useStyles = theme => ({
   },
   deleteComment: {
     marginLeft: theme.spacing(2)
+  },
+  deleteButton: {
+    marginLeft: theme.spacing(1)
   }
 });
 
@@ -287,11 +290,12 @@ class PostDetail extends React.Component {
                   align='left'>
                   {comment.writer_name}
                   {comment.writer === this.props.user.pk ?
-                    <span
-                      className={classes.deleteComment}
+                    <Button
+                      className={classes.deleteButton}
                       onClick={() => this.deleteComment(comment)}>
-                    삭제
-                    </span>:
+                      삭제
+                    </Button>
+                    :
                     ''
                   }
                 </Typography>
