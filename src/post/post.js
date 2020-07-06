@@ -166,7 +166,7 @@ class Post extends React.Component {
               className={classes.confirmButton}
               color="primary"
               variant="contained"
-              onClick={this.onClickSaveButton}>저장</Button>
+              onClick={this.onClickSaveButton}>등록</Button>
           </CardActions>
         </Card>
       </div>

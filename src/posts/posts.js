@@ -153,7 +153,7 @@ class Posts extends React.Component {
                   display='inline'
                   align='left'
                   color='textSecondary'>
-                  {row.title}
+                  {row.title} [{row.comment_count}]
                 </Typography>
                 <Typography
                   display='inline'
