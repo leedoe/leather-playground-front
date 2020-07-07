@@ -142,6 +142,19 @@ class Post extends React.Component {
 
   render() {
     const {classes} = this.props
+    const toolbarOption = [
+      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+      ['blockquote'],
+
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+
+      [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+    
+      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+      [{ 'align': [] }],
+      [{ 'image': 'image' }]
+    ]
+
     return (
       <div>
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
@@ -159,6 +172,9 @@ class Post extends React.Component {
           </CardContent>
           <ReactQuill
             theme='snow'
+            modules={{
+              toolbar: toolbarOption
+            }}
             value={this.state.post.content}
             onChange={this.valueOnChange}/>
           <CardActions>
