@@ -1,5 +1,6 @@
 import React from 'react';
-import { withStyles, Backdrop, CircularProgress, Paper, Typography, Grid, Divider, List, TextField, Button } from '@material-ui/core';
+import { withStyles, Backdrop, CircularProgress, Paper, Typography, Grid, Divider, List, TextField, Button, IconButton, Menu, MenuItem } from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Axios from 'axios';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
@@ -23,6 +24,9 @@ const useStyles = theme => ({
   },
   card: {
     padding: theme.spacing(2)
+  },
+  title: {
+    width: "80%"
   },
   subtitle: {
     paddingTop: theme.spacing(1),
@@ -49,7 +53,10 @@ const useStyles = theme => ({
   },
   deleteButton: {
     marginLeft: theme.spacing(1)
-  }
+  },
+  // iconDiv: {
+  //   float: 'left'
+  // }
 });
 
 
@@ -179,9 +186,7 @@ class PostDetail extends React.Component {
   deleteComment(inputComment) {
     this.setState({nowLoading: true})
     const comment = inputComment
-    console.log(comment)
     comment.deleted = true
-    console.log(comment)
 
     const config = {
       headers: {
@@ -244,9 +249,39 @@ class PostDetail extends React.Component {
       {this.state.nowLoading === false ?
         <Paper className={classes.card}>
           <div>
-            <Typography variant='h4'>
-              {this.state.post.title}
-            </Typography>
+            <Grid
+              className={classes.subtitle}
+              container
+              justify='space-between'>
+                <Typography
+                  variant='h4'
+                  className={classes.title}>
+                  {this.state.post.title}
+                </Typography>
+                {
+                  this.props.user.pk === this.state.post.writer ?
+                  <div className={classes.iconDiv}>
+                    <IconButton
+                      aria-controls="simple-menu"
+                      aria-haspopup="true"
+                      aria-label='settings'
+                      onClick={this.handleClick}>
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      id="simple-menu"
+                      anchorEl={this.state.anchorEl}
+                      keepMounted
+                      open={Boolean(this.state.anchorEl)}
+                      onClose={this.handleClose}>
+                      <MenuItem onClick={this.onClickModifyButton}>수정</MenuItem>
+                      <MenuItem onClick={this.onClickDeleteButton}>삭제</MenuItem>
+                    </Menu>
+                  </div>
+                  :
+                  ''
+                }
+            </Grid>
             
           </div>
           <Grid
