@@ -8,6 +8,7 @@ import Layout from './layout/layout';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
 
+
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
@@ -20,6 +21,7 @@ const theme = createMuiTheme({
 ReactDOM.render(
   
   <ThemeProvider theme={theme}>
+    <meta charset="utf-8" />
     <SnackbarProvider maxSnack={3}>
       <BrowserRouter>
         <Layout />

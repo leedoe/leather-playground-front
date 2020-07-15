@@ -1,12 +1,16 @@
 import React from 'react'
-import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { Card, CardContent, withStyles, TextField, Button, CardActions, Backdrop, CircularProgress } from '@material-ui/core'
+import {  withStyles, TextField, Button, CardActions, Backdrop, CircularProgress, Paper, OutlinedInput } from '@material-ui/core'
 
 import '../post/post.css'
 import { withRouter } from 'react-router-dom'
 import Axios from 'axios'
 import { withSnackbar } from 'notistack'
+
+import { EditorState, Editor, convertToRaw, CompositeDecorator, Entity, AtomicBlockUtils } from 'draft-js'
+import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+
+import 'draft-js/dist/Draft.css';
 
 const useStyles = theme => ({
   confirmButton: {
@@ -14,19 +18,40 @@ const useStyles = theme => ({
     marginLeft: 'auto'
   },
   card: {
+    minHeight: "100%",
     margin: '0 auto',
     [theme.breakpoints.up('lg')]: {
       width: "70%"
     },
     [theme.breakpoints.up('md')]: {
       width: "80%"
-    }
+    },
+    padding: theme.spacing(2),
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 999,
     color: '#fff',
+  },
+  editor: {
+    borderWidth: "2px",
+    borderTopWidth: "0px",
+    borderColor: 'white',
+    borderStyle: 'solid',
+    // marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
+    minHeight: theme.spacing(50),
+    color: 'white'
+  },
+  toolbar: {
+    borderWidth: "2px",
+    borderColor: 'white',
+    borderStyle: 'solid',
+    padding: theme.spacing(2),
+    marginTop: theme.spacing(2)
   }
 });
+
+
 
 class Post extends React.Component {
   state = {
@@ -45,27 +70,92 @@ class Post extends React.Component {
     open: false,
     enqueueSnackbar: '',
     defaultTitle: '',
-    nowLoading: false
+    nowLoading: false,
+    editorState: EditorState.createEmpty()
   }
 
   constructor(props) {
     super(props)
-    this.valueOnChange = this.valueOnChange.bind(this)
     this.onClickSaveButton = this.onClickSaveButton.bind(this)
     this.handleSnackbarClose = this.handleSnackbarClose.bind(this)
     this.onChangeTitle = this.onChangeTitle.bind(this)
+    this.editorStateChanged = this.editorStateChanged.bind(this)
+
+    this.state.editorState = EditorState.createEmpty(this.compositeDecorator)
   }
 
-  valueOnChange(e) {
-    const post = this.state.post
-    post.content = e
-    this.setState({post})
+  
+  instaStrategy = (contentBlock, callback, contentState) => {
+    const text = contentBlock.getText()
+    let matchArr, start
+    let regex = /https:\/\/www\.instagram\.com\/[a-zA-Z0-9-/?_=;&]*/g
+    while( (matchArr = regex.exec(text)) !== null) {
+      start = matchArr.index
+      let end = start + matchArr[0].length
+      callback(start, end)
+    }
   }
 
-  OnChangeContent(e) {
-    const post = this.state.post
-    post.content = e
-    this.setState({post})
+  youtubeStrategy = (contentBlock, callback, contentState) => {
+    const text = contentBlock.getText()
+    let matchArr, start
+    let regex = /(https:\/\/www\.)?youtube\.com\/watch\?v=(?<videoId>[\w-]*)/g
+    while((matchArr = regex.exec(text)) !== null) {
+      start = matchArr.index
+      let end = start + matchArr[0].length
+      callback(start, end)
+    }
+  }
+
+  regexComponent = props => {
+    return (
+      <span style={{ backgroundColor:'lightgreen' }} draftProps={props}>
+        {props.children}
+      </span>
+    )
+  }
+
+  youtubeComponent = props => {
+    return (
+      <span style={{ backgroundColor: 'lightblue'}}>{props.children}</span>
+    )
+  }
+
+  compositeDecorator = new CompositeDecorator([
+    {
+      strategy: this.instaStrategy,
+      component: this.regexComponent
+    },
+    {
+      strategy: this.youtubeStrategy,
+      component: this.youtubeComponent
+    }
+  ])
+
+  getFileBase64 = (file, callback) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+
+    reader.onload = () => callback(reader.result)
+    reader.onerror = error => {}
+  }
+
+  imageUploadCallback = file => new Promise(
+    (resolve, reject) => this.getFileBase64(
+      file,
+      data => resolve({data: {link: data}})
+    )
+  )
+
+  editorStateChanged = newEditorState => {
+    this.setState({
+      editorState: newEditorState,
+    })
+    console.log(convertToRaw(this.state.editorState.getCurrentContent()))
+  }
+
+  focus = () => {
+    this.refs.editor.focus()
   }
 
   componentDidMount() {
@@ -73,11 +163,9 @@ class Post extends React.Component {
       this.props.enqueueSnackbar('비정상적인 접근입니다.', {variant: 'error'})
       this.props.history.replace(`/posts/`)
     }
-    // this.setState({enqueueSnackbar : useSnackbar()})
     if(this.props.location.state !== undefined && this.props.location.state.post !== undefined) {
       this.setState({ modify: true })
       this.setState({post: this.props.location.state.post})
-      // this.setState({value: this.props.location.state.post.content})
       this.setState({defaultTitle: this.props.location.state.post.title})
     }else {
       const post = this.state.post
@@ -90,6 +178,8 @@ class Post extends React.Component {
   sendData() {
     this.setState({nowLoading: true})
     const data = this.state.post
+    data.content = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
+
     const config = {
       headers: {
         Authorization: `token ${localStorage.getItem('token')}`
@@ -104,7 +194,6 @@ class Post extends React.Component {
         ).then((response) => {
           this.setState({nowLoading: false})
           this.props.enqueueSnackbar('글이 정상적으로 수정되었습니다.', {variant: 'success'})
-          // this.props.history.replace(`/posts/${this.state.post.pk}/`)
           this.props.history.go(-1)
         }).catch((e) => {
           this.setState({nowLoading: false})
@@ -140,43 +229,101 @@ class Post extends React.Component {
     this.setState({open: false})
   }
 
+  onChangePictureButton = (e) => {
+    console.log(e.target.files)
+    const reader = new FileReader()
+    reader.readAsDataURL(e.target.files[0])
+    // reader.onload = function() {
+    //   console.log(reader.result)
+    //   const entityKey = Entity.create('image', 'IMMUTABLE', reader.result)
+    //   const {editorState} = this.state
+    //   const newState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, '')
+
+    //   console.log(convertToRaw(editorState.getCurrentContent()), convertToRaw(newState.getCurrentContent()), Entity.get(entityKey))
+
+    //   this.editorStateChanged(newState)
+    // }
+    const {editorState} = this.state
+    const editorStateChanged = this.editorStateChanged
+    reader.addEventListener('load', function() {
+      const contentState = editorState.getCurrentContent()
+      const contentStateWithEntity = contentState.createEntity('img', 'IMMUTABLE', {src: reader.result})
+      
+      const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+      const newEditorState = EditorState.set(
+          editorState,
+          { currentContent: contentStateWithEntity }
+      );
+
+      const newEditorStateWithBlock = AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ');
+      editorStateChanged(newEditorStateWithBlock);
+    })
+  }
+
+  imageBlockFn = (contentBlock) => {
+    if (contentBlock.getType() === 'atomic') {
+        return {
+            component: this.renderimg,
+            editable: false,
+        };
+    }
+    return null;
+  }
+
+  renderimg = (props) => {
+    // get the entity
+    const entity = props.contentState.getEntity(props.block.getEntityAt(0));
+
+    // get the entity data
+    const {src} = entity.getData();
+    
+    // return our custom react component
+    return <img src={src}/>;
+  };
+
+  makingEntity = (base64) => {
+    const entityKey = Entity.create('image', 'IMMUTABLE', base64)
+    const {editorState} = this.state
+    const newState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, '')
+
+    console.log(convertToRaw(editorState.getCurrentContent()), convertToRaw(newState.getCurrentContent()), Entity.get(entityKey))
+
+    this.editorStateChanged(newState)
+  }
+
   render() {
     const {classes} = this.props
-    const toolbarOption = [
-      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-      ['blockquote'],
-
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-
-      [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-    
-      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-      [{ 'align': [] }],
-      [{ 'image': 'image' }]
-    ]
 
     return (
       <div>
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Card className={classes.card}>
-          <CardContent>
-            <TextField
-              required
-              id="post-title"
-              label="제목"
-              value={this.state.post.title}
-              onChange={this.onChangeTitle}
-              fullWidth={true}/>
-          </CardContent>
-          <ReactQuill
-            theme='snow'
-            modules={{
-              toolbar: toolbarOption
-            }}
-            value={this.state.post.content}
-            onChange={this.valueOnChange}/>
+        <Paper className={classes.card}>
+          <TextField
+            required
+            id="post-title"
+            label="제목"
+            value={this.state.post.title}
+            onChange={this.onChangeTitle}
+            fullWidth={true}/>
+          <div className={classes.toolbar}>
+            <label for="image_uploads">
+              <AddAPhotoIcon/>
+            </label>
+            <input 
+              onChange={this.onChangePictureButton}
+              style={{display: "none"}}
+              id='image_uploads' name='image_uploads' type="file" ref={`test`}/>
+          </div>
+          <div className={classes.editor} onClick={this.focus}>
+            <Editor
+              blockRendererFn={this.imageBlockFn}
+              ref='editor'
+              editorState={this.state.editorState}
+              onChange={this.editorStateChanged}
+              />
+          </div>
           <CardActions>
             <Button
               className={classes.confirmButton}
@@ -184,7 +331,8 @@ class Post extends React.Component {
               variant="contained"
               onClick={this.onClickSaveButton}>등록</Button>
           </CardActions>
-        </Card>
+        </Paper>
+        <script src="http://www.instagram.com/embed.js"></script>
       </div>
     )
   }
