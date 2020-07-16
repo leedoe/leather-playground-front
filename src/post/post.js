@@ -298,7 +298,7 @@ class Post extends React.Component {
             onChange={this.onChangeTitle}
             fullWidth={true}/>
           <div className={classes.toolbar}>
-            <label for="image_uploads">
+            <label htmlFor="image_uploads">
               <AddAPhotoIcon/>
             </label>
             <input 
