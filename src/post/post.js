@@ -1,13 +1,12 @@
 import React from 'react'
-import 'react-quill/dist/quill.snow.css'
-import {  withStyles, TextField, Button, CardActions, Backdrop, CircularProgress, Paper, OutlinedInput } from '@material-ui/core'
+import {  withStyles, TextField, Button, CardActions, Backdrop, CircularProgress, Paper } from '@material-ui/core'
 
 import '../post/post.css'
 import { withRouter } from 'react-router-dom'
 import Axios from 'axios'
 import { withSnackbar } from 'notistack'
 
-import { EditorState, Editor, convertToRaw, CompositeDecorator, Entity, AtomicBlockUtils } from 'draft-js'
+import { EditorState, Editor, convertToRaw, CompositeDecorator, Entity, AtomicBlockUtils, convertFromRaw } from 'draft-js'
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 
 import 'draft-js/dist/Draft.css';
@@ -51,6 +50,54 @@ const useStyles = theme => ({
   }
 });
 
+const instaStrategy = (contentBlock, callback, contentState) => {
+  const text = contentBlock.getText()
+  let matchArr, start
+  let regex = /https:\/\/www\.instagram\.com\/[a-zA-Z0-9-/?_=;&]*/g
+  while( (matchArr = regex.exec(text)) !== null) {
+    start = matchArr.index
+    let end = start + matchArr[0].length
+    callback(start, end)
+  }
+}
+
+const youtubeStrategy = (contentBlock, callback, contentState) => {
+  const text = contentBlock.getText()
+  let matchArr, start
+  let regex = /(https:\/\/www\.)?youtube\.com\/watch\?v=(?<videoId>[\w-]*)/g
+  while((matchArr = regex.exec(text)) !== null) {
+    start = matchArr.index
+    let end = start + matchArr[0].length
+    callback(start, end)
+  }
+}
+
+const modifyInstaComponent = props => {
+  return (
+    <span style={{ backgroundColor:'lightgreen' }}>
+      {/* <span style={{display:"none"}}>{props.children}</span> */}
+      {props.children}
+    </span>
+  )
+}
+
+const modifyYoutubeComponent = props => {
+  return (
+    <span style={{ backgroundColor: 'lightblue' }}>{props.children}</span>
+  )
+}
+
+const modifyDecorator = new CompositeDecorator([
+  {
+    strategy: instaStrategy,
+    component: modifyInstaComponent
+  },
+  {
+    strategy: youtubeStrategy,
+    component: modifyYoutubeComponent
+  }
+])
+
 
 
 class Post extends React.Component {
@@ -81,56 +128,8 @@ class Post extends React.Component {
     this.onChangeTitle = this.onChangeTitle.bind(this)
     this.editorStateChanged = this.editorStateChanged.bind(this)
 
-    this.state.editorState = EditorState.createEmpty(this.compositeDecorator)
+    this.state.editorState = EditorState.createEmpty(modifyDecorator)
   }
-
-  
-  instaStrategy = (contentBlock, callback, contentState) => {
-    const text = contentBlock.getText()
-    let matchArr, start
-    let regex = /https:\/\/www\.instagram\.com\/[a-zA-Z0-9-/?_=;&]*/g
-    while( (matchArr = regex.exec(text)) !== null) {
-      start = matchArr.index
-      let end = start + matchArr[0].length
-      callback(start, end)
-    }
-  }
-
-  youtubeStrategy = (contentBlock, callback, contentState) => {
-    const text = contentBlock.getText()
-    let matchArr, start
-    let regex = /(https:\/\/www\.)?youtube\.com\/watch\?v=(?<videoId>[\w-]*)/g
-    while((matchArr = regex.exec(text)) !== null) {
-      start = matchArr.index
-      let end = start + matchArr[0].length
-      callback(start, end)
-    }
-  }
-
-  regexComponent = props => {
-    return (
-      <span style={{ backgroundColor:'lightgreen' }} draftProps={props}>
-        {props.children}
-      </span>
-    )
-  }
-
-  youtubeComponent = props => {
-    return (
-      <span style={{ backgroundColor: 'lightblue'}}>{props.children}</span>
-    )
-  }
-
-  compositeDecorator = new CompositeDecorator([
-    {
-      strategy: this.instaStrategy,
-      component: this.regexComponent
-    },
-    {
-      strategy: this.youtubeStrategy,
-      component: this.youtubeComponent
-    }
-  ])
 
   getFileBase64 = (file, callback) => {
     const reader = new FileReader()
@@ -151,7 +150,6 @@ class Post extends React.Component {
     this.setState({
       editorState: newEditorState,
     })
-    console.log(convertToRaw(this.state.editorState.getCurrentContent()))
   }
 
   focus = () => {
@@ -167,6 +165,10 @@ class Post extends React.Component {
       this.setState({ modify: true })
       this.setState({post: this.props.location.state.post})
       this.setState({defaultTitle: this.props.location.state.post.title})
+      // this.state.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.location.state.post.content)), modifyDecorator)
+      this.setState({
+        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.location.state.post.content)), modifyDecorator)
+      })
     }else {
       const post = this.state.post
       post.writer_name = this.props.user.username
@@ -230,19 +232,9 @@ class Post extends React.Component {
   }
 
   onChangePictureButton = (e) => {
-    console.log(e.target.files)
     const reader = new FileReader()
     reader.readAsDataURL(e.target.files[0])
-    // reader.onload = function() {
-    //   console.log(reader.result)
-    //   const entityKey = Entity.create('image', 'IMMUTABLE', reader.result)
-    //   const {editorState} = this.state
-    //   const newState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, '')
 
-    //   console.log(convertToRaw(editorState.getCurrentContent()), convertToRaw(newState.getCurrentContent()), Entity.get(entityKey))
-
-    //   this.editorStateChanged(newState)
-    // }
     const {editorState} = this.state
     const editorStateChanged = this.editorStateChanged
     reader.addEventListener('load', function() {
@@ -278,15 +270,13 @@ class Post extends React.Component {
     const {src} = entity.getData();
     
     // return our custom react component
-    return <img src={src}/>;
+    return <img src={src} alt={src}/>;
   };
 
   makingEntity = (base64) => {
     const entityKey = Entity.create('image', 'IMMUTABLE', base64)
     const {editorState} = this.state
     const newState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, '')
-
-    console.log(convertToRaw(editorState.getCurrentContent()), convertToRaw(newState.getCurrentContent()), Entity.get(entityKey))
 
     this.editorStateChanged(newState)
   }

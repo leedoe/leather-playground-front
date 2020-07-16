@@ -70,10 +70,8 @@ const useStyles = theme => ({
 
 const instaStrategy = (contentBlock, callback, contentState) => {
   const text = contentBlock.getText()
-  // console.log(text)
   let matchArr, start
   let regex = /https:\/\/www\.instagram\.com\/[a-zA-Z0-9-/?_=;&]*/g
-  // console.log(regex.exec(text))
   while( (matchArr = regex.exec(text)) !== null) {
     start = matchArr.index
     let end = start + matchArr[0].length
@@ -95,7 +93,6 @@ const youtubeStrategy = (contentBlock, callback, contentState) => {
 const regexComponent = props => {
   return (
     <Instagram style={{ backgroundColor:'lightgreen' }} draftProps={props}>
-      {/* <span style={{display:"none"}}>{props.children}</span> */}
     </Instagram>
   )
 }
@@ -179,7 +176,11 @@ class PostDetail extends React.Component {
 
     Axios.get(`http://127.0.0.1:8000/api/posts/${this.props.match.params.pk}`).then((response) => {
       const post = response.data;
-      this.state.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator)
+
+      // this.state.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator)
+      this.setState({
+        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator)
+      })
       this.setState({ post })
       this.setState({ nowLoading: false })
     }).catch((e) => {
@@ -312,7 +313,7 @@ class PostDetail extends React.Component {
     this.setState({ writedComment: e.target.value })
   }
 
-  imageBlockFn = (contentBlock) => {
+  imageBlockFn = (contentBlock) => {   
     if (contentBlock.getType() === 'atomic') {
         return {
             component: this.renderimg,
@@ -330,7 +331,7 @@ class PostDetail extends React.Component {
     const {src} = entity.getData();
     
     // return our custom react component
-    return <img src={src}/>;
+    return <img src={src} alt={src}/>;
   };
 
   render() {

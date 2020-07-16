@@ -18,13 +18,10 @@ class Instagram extends React.Component {
         }
       }
     ).then((response) => {
-      console.log(response)
       let html = response.data.html
-      console.log(response.data.html.search(`<script async src="https://www.instagram.com/embed.js"></script>`))
       html = html.replace(
         `<script async src="//www.instagram.com/embed.js"></script>`,
         `<script async src="https://www.instagram.com/embed.js"></script>`)
-      console.log(html)
       this.setState({instagramTag: {__html: html}}) 
 
       if(window.instgrm !== undefined) {
@@ -48,7 +45,6 @@ class Instagram extends React.Component {
   render () {
     // window.instgrm.Embeds.process()
     const children = this.props.draftProps.children
-    console.log(children)
     return (
       <div>
         <div style={{display: "none"}}>{children}</div>
