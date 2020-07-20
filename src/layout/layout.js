@@ -10,6 +10,7 @@ import PostDetail from '../postDetail/postDetail'
 import LoginPage from '../loginPage/loginPage'
 import Post from '../post/post'
 import RegisterUser from '../registerUser/registerUser';
+import LNaverMap from '../map/naverMap';
 
 const drawerWidth = 240;
 const useStyles = theme => ({
@@ -105,7 +106,7 @@ class Layout extends React.Component {
           <div className={classes.toolbar}/>
           <Switch>
             <Route path='/map/'>
-              <h1>MAP</h1>
+              <LNaverMap/>
             </Route>
             <Route exact path='/post/'>
               <Post user={this.state.user}/>
