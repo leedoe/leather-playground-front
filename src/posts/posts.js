@@ -46,6 +46,7 @@ class Posts extends React.Component {
     nowLoading: false,
     count: 0,
     posts: [],
+    notices: [],
     pageNumber: 1
   }
 
@@ -76,7 +77,7 @@ class Posts extends React.Component {
     }
   }
 
-  fetchPostsFromServer() {
+  fetchPostsFromServer = () => {
     this.setState({nowLoading: true})
     let pageNumber = this.getDataFromParameter('page')
     if (pageNumber == null) {
@@ -84,7 +85,7 @@ class Posts extends React.Component {
     }
     this.setState({pageNumber})
 
-    axios.get(`http://127.0.0.1:8000/api/posts/?page=${pageNumber}`).then((response) => {
+    axios.get(`http://127.0.0.1:8000/api/posts/?page=${pageNumber}&noticed=false`).then((response) => {
       const posts = response.data.results;
       
       const naviCount = response.data.count % 30;
@@ -101,6 +102,12 @@ class Posts extends React.Component {
       this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
       this.setState({nowLoading: false})
     });
+
+    axios.get(`http://127.0.0.1:8000/api/posts/?noticed=true`).then((response) => {
+      const notices = response.data.results;
+      console.log(notices)
+      this.setState({notices})
+    })
   }
 
   componentDidMount() {
@@ -122,6 +129,23 @@ class Posts extends React.Component {
         </Backdrop>
         <Hidden smUp implementation="css">
           <List>
+          {this.state.notices.map((row) => (
+            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+              <ListItemText 
+                primary={
+                  <Typography color="textPrimary">
+                    <b>{row.title}</b>[{row.comment_count}]
+                  </Typography>
+                }
+                secondary={
+                  <Typography
+                    color="textSecondary"
+                    align="right">
+                    {row.writer_name}
+                  </Typography>
+                }/>
+            </ListItem>
+          ))}
           {this.state.posts.map((row) => (
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
               <ListItemText 
@@ -143,6 +167,27 @@ class Posts extends React.Component {
         </Hidden>
         <Hidden xsDown implementation="css">
           <List>
+          {this.state.notices.map((row) => (
+            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+              <Grid
+                className={classes.subtitle}
+                container
+                justify='space-between'>
+                <Typography
+                  display='inline'
+                  align='left'
+                  color='textSecondary'>
+                  <b>{row.title}</b> [{row.comment_count}]
+                </Typography>
+                <Typography
+                  display='inline'
+                  align='right'
+                  color='textSecondary'>
+                    {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
+                </Typography>
+              </Grid>
+            </ListItem>
+          ))}
           {this.state.posts.map((row) => (
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
               <Grid
