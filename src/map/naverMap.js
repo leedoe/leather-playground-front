@@ -1,9 +1,9 @@
 import React from 'react'
 import { RenderAfterNavermapsLoaded, NaverMap, Marker } from 'react-naver-maps'
 import Axios from 'axios'
-import { Divider, withStyles, Paper, Grid, IconButton } from '@material-ui/core'
+import { Divider, withStyles, Paper, IconButton, Backdrop, CircularProgress } from '@material-ui/core'
 import { withSnackbar } from 'notistack'
-import { withRouter, Link } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import HomeIcon from '@material-ui/icons/Home';
 import InstagramIcon from '@material-ui/icons/Instagram';
 
@@ -16,18 +16,23 @@ const useStyles = theme => ({
   },
   storePaper: {
     padding: theme.spacing(3)
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
   }
 });
 
 class LNaverMap extends React.Component {
   state = {
     stores: [],
-    currentStore: {}
+    currentStore: {},
+    nowLoading: true,
   }
 
   componentDidMount() {
     Axios.get('http://127.0.0.1:8000/api/stores/').then((response) => {
-      this.setState({stores: response.data,})
+      this.setState({stores: response.data, nowLoading: false,})
     })
   }
 
@@ -35,6 +40,9 @@ class LNaverMap extends React.Component {
     const {classes} = this.props
     return (
       <div>
+        <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <div>
           <RenderAfterNavermapsLoaded
               ncpClientId={`jjfpybsl0w`}
