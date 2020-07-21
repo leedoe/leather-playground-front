@@ -95,8 +95,8 @@ class LNaverMap extends React.Component {
                 <img
                   alt={`NaverBlog`}
                   src={naverIcon}
-                  width='36'
-                  height='36'/>
+                  width='24'
+                  height='24'/>
               </IconButton>
                 :
               ''
