@@ -56,7 +56,6 @@ class Layout extends React.Component {
 
   constructor(props) {
     super(props);
-    this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
     this.login = this.login.bind(this)
     this.setUserData = this.setUserData.bind(this)
     this.logout = this.logout.bind(this)
