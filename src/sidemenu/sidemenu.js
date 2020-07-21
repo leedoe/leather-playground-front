@@ -48,6 +48,7 @@ const useStyles = theme => ({
 class SideMenu extends React.Component {
   state = {
     anchorEl: null,
+    anchorMain: null,
     user: {}
   }
 
@@ -111,12 +112,25 @@ class SideMenu extends React.Component {
         </div>
         <Divider/>
         <List>
+          {this.props.mobileOpen === true ?
+          <ListItem button component={Link} to={`/posts?page=1`} onClick={this.props.handleDrawerToggle}>
+            <ListItemText primary={`게시판`}/>
+          </ListItem>
+          :
           <ListItem button component={Link} to={`/posts?page=1`}>
             <ListItemText primary={`게시판`}/>
           </ListItem>
+          }
+          {this.props.mobileOpen === true ?
+          <ListItem button component={Link} to={`/map`} onClick={this.props.handleDrawerToggle}>
+            <ListItemText primary={`지도`}/>
+          </ListItem>
+          :
           <ListItem button component={Link} to={`/map`}>
             <ListItemText primary={`지도`}/>
           </ListItem>
+          }
+          
         </List>
         <Divider/>
         <List>
@@ -131,7 +145,7 @@ class SideMenu extends React.Component {
             <Drawer
               container={container}
               variant="temporary"
-              anchor={classes.direction === 'rtl' ? 'right' : 'left'}
+              anchor={`left`}
               open={this.props.mobileOpen}
               onClose={this.props.handleDrawerToggle}
               classes={{

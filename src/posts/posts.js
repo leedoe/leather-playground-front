@@ -43,7 +43,7 @@ const useStyles = theme => ({
 
 class Posts extends React.Component {
   state = {
-    nowLoading: true,
+    nowLoading: false,
     count: 0,
     posts: [],
     pageNumber: 1
