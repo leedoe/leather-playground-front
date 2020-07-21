@@ -171,7 +171,7 @@ class Post extends React.Component {
       })
     }else {
       const post = this.state.post
-      post.writer_name = this.props.user.username
+      post.writer_name = this.props.user.name
       post.writer = this.props.user.pk
       this.setState({post})
     }
