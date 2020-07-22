@@ -6,6 +6,7 @@ import { withSnackbar } from 'notistack'
 import { withRouter } from 'react-router-dom'
 import HomeIcon from '@material-ui/icons/Home';
 import InstagramIcon from '@material-ui/icons/Instagram';
+import NMap from './map'
 
 import naverIcon from '../img/img_naver_share_07.png'
 
@@ -28,12 +29,18 @@ class LNaverMap extends React.Component {
     stores: [],
     currentStore: {},
     nowLoading: true,
+    naverMapRef: '',
   }
 
   componentDidMount() {
     Axios.get('http://127.0.0.1:8000/api/stores/').then((response) => {
       this.setState({stores: response.data, nowLoading: false,})
     })
+  }
+
+  changeCurrentStore = (store) => {
+    // console.log(store)
+    this.setState({currentStore: store,})
   }
 
   render() {
@@ -48,7 +55,8 @@ class LNaverMap extends React.Component {
               ncpClientId={`jjfpybsl0w`}
               error={<p>Maps Load Error</p>}
               loading={<p>Maps Loading...</p>}>
-            <NaverMap
+            {/* <NaverMap
+                naverRef={ref => { this.mapRef = ref }}
                 style={{
                     width: '100%',
                     height: '400px',
@@ -56,16 +64,16 @@ class LNaverMap extends React.Component {
                   defaultCenter={{ lat: 37.5668260055, lng: 126.9786567859 }}
                   defaultZoom={15}>
               {this.state.stores.map(store => {
-                const latlng = store.latlng.split(',')
                 return (
                   <Marker
                     title={store.name}
                     key={store.id}
-                    position={{lat: latlng[0], lng: latlng[1]}}
+                    position={{lat: store.x, lng: store.y}}
                     onClick={() => {this.setState({currentStore: store,})}}/>
                 )
               })}
-            </NaverMap>
+            </NaverMap> */}
+            <NMap changeCurrentStore={this.changeCurrentStore}/>
           </RenderAfterNavermapsLoaded>
         </div>
         <Divider className={classes.divider}/>
