@@ -95,7 +95,7 @@ class SideMenu extends React.Component {
               keepMounted
               open={Boolean(this.state.anchorEl)}
               onClose={this.handleClose}>
-              <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+              <MenuItem component={Link} to={`/users/${this.state.user.username}`} onClick={this.handleClose}>Profile</MenuItem>
               <MenuItem onClick={this.handleCloseWithLogout}>Logout</MenuItem>
             </Menu>
           </div>  
