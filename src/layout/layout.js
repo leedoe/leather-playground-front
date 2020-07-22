@@ -11,6 +11,7 @@ import LoginPage from '../loginPage/loginPage'
 import Post from '../post/post'
 import RegisterUser from '../registerUser/registerUser';
 import LNaverMap from '../map/naverMap';
+import UserInfo from '../userInfo/userInfo';
 
 const drawerWidth = 240;
 const useStyles = theme => ({
@@ -125,6 +126,9 @@ class Layout extends React.Component {
             </Route>
             <Route path='/users/register/'>
               <RegisterUser setUserData={this.setUserData}/>
+            </Route>
+            <Route path='/users/'>
+              <UserInfo/>
             </Route>
           </Switch>
         </main>
