@@ -56,7 +56,6 @@ class LNaverMap extends React.Component {
                   defaultCenter={{ lat: 37.5668260055, lng: 126.9786567859 }}
                   defaultZoom={15}>
               {this.state.stores.map(store => {
-                // console.log(store)
                 const latlng = store.latlng.split(',')
                 return (
                   <Marker

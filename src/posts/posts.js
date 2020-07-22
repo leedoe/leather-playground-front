@@ -105,7 +105,6 @@ class Posts extends React.Component {
 
     axios.get(`http://127.0.0.1:8000/api/posts/?noticed=true`).then((response) => {
       const notices = response.data.results;
-      console.log(notices)
       this.setState({notices})
     })
   }
