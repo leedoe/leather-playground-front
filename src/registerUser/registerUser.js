@@ -3,6 +3,8 @@ import { withStyles, Backdrop, CircularProgress, Paper, Button, TextField } from
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router-dom';
 import Axios from 'axios';
+import bcrypt from 'bcryptjs'
+import salt from '../salt.js'
 
 const useStyles = theme => ({
   logindiv: {
@@ -57,6 +59,7 @@ class RegisterUser extends React.Component {
     this.passwordOnChange = this.passwordOnChange.bind(this)
     this.nameOnChange = this.nameOnChange.bind(this)
     this.register = this.register.bind(this)
+    this.state.salt = salt.salt
   }
 
   usernameOnChange (e) {
@@ -67,7 +70,17 @@ class RegisterUser extends React.Component {
 
   passwordOnChange (e) {
     const user = this.state.user
-    user.password = e.target.value
+    // user.password = e.target.value
+
+    // bcrypt.genSalt(10, (err, salt) => {
+    //   bcrypt.hash(e.target.value, salt, (err, hash) => {
+    //     user.password = hash
+    //   })
+    // })
+    // console.log(user)
+    const hash = bcrypt.hashSync(e.target.value, this.state.salt)
+    user.password = hash
+    console.log(user)
     this.setState({user})
   }
 

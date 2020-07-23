@@ -5,6 +5,9 @@ import Axios from 'axios';
 import { withRouter, Link } from 'react-router-dom'
 import { withSnackbar } from 'notistack';
 
+import bcrypt from 'bcryptjs'
+import salt from "../salt.js"
+
 const useStyles = theme => ({
   logindiv: {
     // width: theme.spacing(50),
@@ -45,7 +48,8 @@ class LoginPage extends React.Component {
       password: ''
     }, 
     loginError: false,
-    nowLoading: false
+    nowLoading: false,
+    salt: ''
   }
 
   constructor(props) {
@@ -56,6 +60,7 @@ class LoginPage extends React.Component {
     this.onPushLoginButton = this.onPushLoginButton.bind(this)
     this.inputPasswordKeyPress = this.inputPasswordKeyPress.bind(this)
     this.inputIdKeyPress = this.inputIdKeyPress.bind(this)
+    this.state.salt = salt.salt
   }
 
   usernameOnChange(e) {
@@ -66,7 +71,9 @@ class LoginPage extends React.Component {
 
   passwordOnChange(e) {
     const user = this.state.user
-    user.password = e.target.value
+    const hash = bcrypt.hashSync(e.target.value, this.state.salt)
+    user.password = hash
+    console.log(user)
     this.setState({user})
   }
 

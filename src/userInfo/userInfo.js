@@ -5,6 +5,9 @@ import Axios from 'axios';
 import { withRouter, Link } from 'react-router-dom'
 import { withSnackbar } from 'notistack';
 
+import bcrypt from 'bcryptjs'
+import salt from '../salt.js'
+
 const useStyles = theme => ({
   logindiv: {
     // width: theme.spacing(50),
@@ -22,17 +25,22 @@ const useStyles = theme => ({
 
 class UserInfo extends React.Component {
   state = {
-    user: {}
+    user: {},
+    salt: '',
   }
 
   constructor(props) {
     super(props)
     this.state.user = JSON.parse(localStorage.getItem('user'))
+    this.state.salt = salt.salt
   }
 
   passwordOnChange = (e) => {
     const user = this.state.user
-    user.password = e.target.value
+    // user.password = e.target.value
+    const hash = bcrypt.hashSync(e.target.value, this.state.salt)
+    user.password = hash
+    console.log(user)
     this.setState({user})
   }
 
@@ -58,6 +66,7 @@ class UserInfo extends React.Component {
       ).then((response) => {
         this.props.enqueueSnackbar('정상적으로 수정 되었습니다.', {variant: 'success'})
         localStorage.setItem('user', JSON.stringify(user))
+        this.props.setUserData(user)
         this.props.history.replace(`/`)
     })
   }

@@ -128,7 +128,7 @@ class Layout extends React.Component {
               <RegisterUser setUserData={this.setUserData}/>
             </Route>
             <Route path='/users/'>
-              <UserInfo/>
+              <UserInfo setUserData={this.setUserData}/>
             </Route>
           </Switch>
         </main>
