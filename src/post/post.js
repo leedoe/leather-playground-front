@@ -1,5 +1,5 @@
 import React from 'react'
-import {  withStyles, TextField, Button, CardActions, Backdrop, CircularProgress, Paper } from '@material-ui/core'
+import {  withStyles, TextField, Button, CardActions, Backdrop, CircularProgress, Paper, InputLabel, Select } from '@material-ui/core'
 
 import '../post/post.css'
 import { withRouter } from 'react-router-dom'
@@ -150,6 +150,7 @@ class Post extends React.Component {
     this.setState({
       editorState: newEditorState,
     })
+    // console.log(convertToRaw(newEditorState.getCurrentContent()))
   }
 
   focus = () => {
@@ -281,6 +282,14 @@ class Post extends React.Component {
     this.editorStateChanged(newState)
   }
 
+  handleCategory = (e) => {
+    console.log(e.target.value)
+    const value = e.target.value
+    const post = this.state.post
+    post.category = value
+    this.setState({post,})
+  }
+
   render() {
     const {classes} = this.props
 
@@ -290,6 +299,21 @@ class Post extends React.Component {
           <CircularProgress color="inherit" />
         </Backdrop>
         <Paper className={classes.card}>
+          <InputLabel htmlFor="age-native-simple">카테고리</InputLabel>
+          <Select
+            native
+            value={this.state.post.category}
+            onChange={this.handleCategory}
+            inputProps={{
+              name: 'age',
+              id: 'age-native-simple',
+            }}
+          >
+            <option value={0}>일반</option>
+            <option value={2}>팁/강좌</option>
+            <option value={4}>사용기/리뷰</option>
+            <option value={3}>질문</option>
+          </Select>
           <TextField
             required
             id="post-title"
