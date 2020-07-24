@@ -38,6 +38,18 @@ const useStyles = theme => ({
     bottom: 20,
     left: 'auto',
     position: 'fixed',
+  },
+  tip: {
+    color: 'skyblue'
+  },
+  question: {
+    color: 'LightCoral'
+  },
+  review: {
+    color: 'PaleGreen'
+  },
+  notice: {
+    color: 'Thistle'
   }
 });
 
@@ -120,6 +132,7 @@ class Posts extends React.Component {
   }
 
   render () {
+    console.log(this.state.notices)
     const { classes } = this.props;
     return(
       <div className={classes.root}>
@@ -132,16 +145,26 @@ class Posts extends React.Component {
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
               <ListItemText 
                 primary={
-                  <Typography color="textPrimary">
-                    <b>{row.title}</b>[{row.comment_count}]
-                  </Typography>
+                  <Grid
+                      container
+                      justify='space-between'>
+                    <Typography color="textPrimary">
+                      {row.title}[{row.comment_count}]
+                    </Typography>
+                    <Typography
+                      color="textPrimary">
+                      {row.writer_name}
+                    </Typography>
+                  </Grid>
                 }
                 secondary={
-                  <Typography
-                    color="textSecondary"
-                    align="right">
-                    {row.writer_name}
-                  </Typography>
+                  <Grid
+                    className={classes.subtitle}
+                    container
+                    justify='space-between'>
+                    <span className={classes.notice}>{`공지`}</span>
+                    <span>{this.dateTimeFormatting(row.created_time)}</span>
+                  </Grid>
                 }/>
             </ListItem>
           ))}
@@ -154,11 +177,35 @@ class Posts extends React.Component {
                   </Typography>
                 }
                 secondary={
-                  <Typography
-                    color="textSecondary"
-                    align="right">
-                    {row.writer_name}
-                  </Typography>
+                  <Grid
+                    className={classes.subtitle}
+                    container
+                    justify='space-between'>
+                    <Typography
+                      color="textSecondary"
+                      align="left">
+                      {row.category === 1 &&
+                      <span>{`일반`}</span>
+                      }
+                      {row.category === 2 &&
+                      <span className={classes.tip}>{`팁/강좌`}</span>
+                      }
+                      {row.category === 3 &&
+                      <span className={classes.question}>{`질문`}</span>
+                      }
+                      {row.category === 4 &&
+                      <span className={classes.review}>{`사용기/리뷰`}</span>
+                      }
+                      {row.category === 5 &&
+                      `공지`
+                      }
+                    </Typography>
+                    <Typography
+                      color="textSecondary"
+                      align="right">
+                      {row.writer_name}
+                    </Typography>
+                  </Grid>
                 }/>
             </ListItem>
           ))}
@@ -168,7 +215,7 @@ class Posts extends React.Component {
           <List>
           {this.state.notices.map((row) => (
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              <Grid
+              {/* <Grid
                 className={classes.subtitle}
                 container
                 justify='space-between'>
@@ -184,12 +231,35 @@ class Posts extends React.Component {
                   color='textSecondary'>
                     {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
                 </Typography>
-              </Grid>
+              </Grid> */}
+              <ListItemText 
+                primary={
+                  <Grid
+                      container
+                      justify='space-between'>
+                    <Typography color="textPrimary">
+                      {row.title}[{row.comment_count}]
+                    </Typography>
+                    <Typography
+                      color="textPrimary">
+                      {row.writer_name}
+                    </Typography>
+                  </Grid>
+                }
+                secondary={
+                  <Grid
+                    className={classes.subtitle}
+                    container
+                    justify='space-between'>
+                    <span className={classes.notice}>{`공지`}</span>
+                    <span>{this.dateTimeFormatting(row.created_time)}</span>
+                  </Grid>
+                }/>
             </ListItem>
           ))}
           {this.state.posts.map((row) => (
             <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              <Grid
+              {/* <Grid
                 className={classes.subtitle}
                 container
                 justify='space-between'>
@@ -205,7 +275,50 @@ class Posts extends React.Component {
                   color='textSecondary'>
                     {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
                 </Typography>
-              </Grid>
+              </Grid> */}
+              <ListItemText 
+                primary={
+                  <Grid
+                      container
+                      justify='space-between'>
+                    <Typography color="textPrimary">
+                      {row.title}[{row.comment_count}]
+                    </Typography>
+                    <Typography
+                      color="textPrimary">
+                      {row.writer_name}
+                    </Typography>
+                  </Grid>
+                }
+                secondary={
+                  <Grid
+                    className={classes.subtitle}
+                    container
+                    justify='space-between'>
+                    <Typography
+                      color="textSecondary"
+                      align="left">
+                      {row.category === 1 &&
+                      <span>{`일반`}</span>
+                      }
+                      {row.category === 2 &&
+                      <span className={classes.tip}>{`팁/강좌`}</span>
+                      }
+                      {row.category === 3 &&
+                      <span className={classes.question}>{`질문`}</span>
+                      }
+                      {row.category === 4 &&
+                      <span className={classes.review}>{`사용기/리뷰`}</span>
+                      }
+                      {row.category === 5 &&
+                      `공지`
+                      }
+                    </Typography>
+                    <Typography color="textSecondary">
+                      {this.dateTimeFormatting(row.created_time)}
+                    </Typography>
+                  </Grid>
+                }/>
             </ListItem>
           ))}
           </List>
