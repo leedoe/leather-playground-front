@@ -164,6 +164,9 @@ class Posts extends React.Component {
                   <span className={classes.notice}>{`공지`}</span>
                   <span>{this.dateTimeFormatting(row.created_time)}</span>
                 </Grid>
+              }
+              secondaryTypographyProps={
+                {component:'div'}
               }/>
           </ListItem>
         ))}
@@ -188,26 +191,24 @@ class Posts extends React.Component {
                   className={classes.subtitle}
                   container
                   justify='space-between'>
-                  <Typography
-                    color="textSecondary"
-                    align="left">
-                    {row.category === 1 &&
-                    <span>{`일반`}</span>
-                    }
-                    {row.category === 2 &&
-                    <span className={classes.tip}>{`팁/강좌`}</span>
-                    }
-                    {row.category === 3 &&
-                    <span className={classes.question}>{`질문`}</span>
-                    }
-                    {row.category === 4 &&
-                    <span className={classes.review}>{`사용기/리뷰`}</span>
-                    }
-                  </Typography>
-                  <Typography color="textSecondary">
-                    {this.dateTimeFormatting(row.created_time)}
-                  </Typography>
+                  {row.category === 1 &&
+                  <span>{`일반`}</span>
+                  }
+                  {row.category === 2 &&
+                  <span className={classes.tip}>{`팁/강좌`}</span>
+                  }
+                  {row.category === 3 &&
+                  <span className={classes.question}>{`질문`}</span>
+                  }
+                  {row.category === 4 &&
+                  <span className={classes.review}>{`사용기/리뷰`}</span>
+                  }
+                  
+                  <span>{this.dateTimeFormatting(row.created_time)}</span>
                 </Grid>
+              }
+              secondaryTypographyProps={
+                {component:'div'}
               }/>
           </ListItem>
         ))}
