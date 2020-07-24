@@ -1,5 +1,5 @@
 import React from 'react'
-import { RenderAfterNavermapsLoaded, NaverMap, Marker } from 'react-naver-maps'
+import { RenderAfterNavermapsLoaded } from 'react-naver-maps'
 import Axios from 'axios'
 import { Divider, withStyles, Paper, IconButton, Backdrop, CircularProgress } from '@material-ui/core'
 import { withSnackbar } from 'notistack'

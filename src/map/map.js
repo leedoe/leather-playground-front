@@ -1,13 +1,9 @@
 import React from 'react'
-import { RenderAfterNavermapsLoaded, NaverMap, Marker } from 'react-naver-maps'
+import { NaverMap } from 'react-naver-maps'
 import Axios from 'axios'
-import { Divider, withStyles, Paper, IconButton, Backdrop, CircularProgress } from '@material-ui/core'
+import { withStyles } from '@material-ui/core'
 import { withSnackbar } from 'notistack'
 import { withRouter } from 'react-router-dom'
-import HomeIcon from '@material-ui/icons/Home';
-import InstagramIcon from '@material-ui/icons/Instagram';
-
-import naverIcon from '../img/img_naver_share_07.png'
 
 const useStyles = theme => ({
   divider: {
@@ -47,10 +43,6 @@ class NMap extends React.Component {
       latSpan,
     })
 
-    // window.naver.maps.Event.addListener(this.mapRef.instance, 'idle', () => {
-    //   this.updateMarkers(this.mapRef.instance, this.state.stores)
-    // })
-
     Axios.get('http://127.0.0.1:8000/api/stores/').then((response) => {
       const markers = []
       for(const store of response.data) {
@@ -60,15 +52,11 @@ class NMap extends React.Component {
           title: store.name,
           
         })
-          // <Marker
-          //   title={store.name}
-          //   key={store.id}
-          //   position={{lat: store.x, lng: store.y}}
-          //   onClick={() => {this.setState({currentStore: store,})}}/>
+
         window.naver.maps.Event.addListener(marker, 'click', () => {
           this.props.changeCurrentStore(store)
         })
-        // marker.addListener('click', this.props.changeCurrentStore(store))
+        
         markers.push(marker)
       }
       
@@ -79,7 +67,6 @@ class NMap extends React.Component {
   updateMarkers = () => {
     const mapBounds = this.mapRef.getBounds()
     for(const marker of this.state.stores) {
-      // console.log(mapBounds.hasLatLng(marker.position))
       if (mapBounds.hasLatLng(marker.position)) {
         if(marker.getMap()) {
           return

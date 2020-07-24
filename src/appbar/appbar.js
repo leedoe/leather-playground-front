@@ -36,7 +36,7 @@ class LeatherAppBar extends React.Component {
                 className={classes.menuButton}>
                 <MenuIcon />
             </IconButton>
-            <Typography>LEATHER</Typography>
+            <Typography variant='h6'>CRAFTERS</Typography>
             </Toolbar>
         </AppBar>
       </div>
