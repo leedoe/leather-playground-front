@@ -138,191 +138,80 @@ class Posts extends React.Component {
       <div className={classes.root}>
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
-        </Backdrop>
-        <Hidden smUp implementation="css">
-          <List>
-          {this.state.notices.map((row) => (
-            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              <ListItemText 
-                primary={
-                  <Grid
-                      container
-                      justify='space-between'>
-                    <Typography color="textPrimary">
-                      {row.title}[{row.comment_count}]
-                    </Typography>
-                    <Typography
-                      color="textPrimary">
-                      {row.writer_name}
-                    </Typography>
-                  </Grid>
-                }
-                secondary={
-                  <Grid
-                    className={classes.subtitle}
+        </Backdrop>   
+        <List>
+        {this.state.notices.map((row) => (
+          <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+            <ListItemText 
+              primary={
+                <Grid
                     container
                     justify='space-between'>
-                    <span className={classes.notice}>{`공지`}</span>
-                    <span>{this.dateTimeFormatting(row.created_time)}</span>
-                  </Grid>
-                }/>
-            </ListItem>
-          ))}
-          {this.state.posts.map((row) => (
-            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              <ListItemText 
-                primary={
                   <Typography color="textPrimary">
                     {row.title}[{row.comment_count}]
                   </Typography>
-                }
-                secondary={
-                  <Grid
-                    className={classes.subtitle}
+                  <Typography
+                    color="textPrimary">
+                    {row.writer_name}
+                  </Typography>
+                </Grid>
+              }
+              secondary={
+                <Grid
+                  className={classes.subtitle}
+                  container
+                  justify='space-between'>
+                  <span className={classes.notice}>{`공지`}</span>
+                  <span>{this.dateTimeFormatting(row.created_time)}</span>
+                </Grid>
+              }/>
+          </ListItem>
+        ))}
+        {this.state.posts.map((row) => (
+          <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+            <ListItemText 
+              primary={
+                <Grid
                     container
                     justify='space-between'>
-                    <Typography
-                      color="textSecondary"
-                      align="left">
-                      {row.category === 1 &&
-                      <span>{`일반`}</span>
-                      }
-                      {row.category === 2 &&
-                      <span className={classes.tip}>{`팁/강좌`}</span>
-                      }
-                      {row.category === 3 &&
-                      <span className={classes.question}>{`질문`}</span>
-                      }
-                      {row.category === 4 &&
-                      <span className={classes.review}>{`사용기/리뷰`}</span>
-                      }
-                      {row.category === 5 &&
-                      `공지`
-                      }
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      align="right">
-                      {row.writer_name}
-                    </Typography>
-                  </Grid>
-                }/>
-            </ListItem>
-          ))}
-          </List>
-        </Hidden>
-        <Hidden xsDown implementation="css">
-          <List>
-          {this.state.notices.map((row) => (
-            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              {/* <Grid
-                className={classes.subtitle}
-                container
-                justify='space-between'>
-                <Typography
-                  display='inline'
-                  align='left'
-                  color='textSecondary'>
-                  <b>{row.title}</b> [{row.comment_count}]
-                </Typography>
-                <Typography
-                  display='inline'
-                  align='right'
-                  color='textSecondary'>
-                    {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
-                </Typography>
-              </Grid> */}
-              <ListItemText 
-                primary={
-                  <Grid
-                      container
-                      justify='space-between'>
-                    <Typography color="textPrimary">
-                      {row.title}[{row.comment_count}]
-                    </Typography>
-                    <Typography
-                      color="textPrimary">
-                      {row.writer_name}
-                    </Typography>
-                  </Grid>
-                }
-                secondary={
-                  <Grid
-                    className={classes.subtitle}
-                    container
-                    justify='space-between'>
-                    <span className={classes.notice}>{`공지`}</span>
-                    <span>{this.dateTimeFormatting(row.created_time)}</span>
-                  </Grid>
-                }/>
-            </ListItem>
-          ))}
-          {this.state.posts.map((row) => (
-            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-              {/* <Grid
-                className={classes.subtitle}
-                container
-                justify='space-between'>
-                <Typography
-                  display='inline'
-                  align='left'
-                  color='textSecondary'>
-                  {row.title} [{row.comment_count}]
-                </Typography>
-                <Typography
-                  display='inline'
-                  align='right'
-                  color='textSecondary'>
-                    {this.dateTimeFormatting(row.created_time)} / {row.writer_name}
-                </Typography>
-              </Grid> */}
-              <ListItemText 
-                primary={
-                  <Grid
-                      container
-                      justify='space-between'>
-                    <Typography color="textPrimary">
-                      {row.title}[{row.comment_count}]
-                    </Typography>
-                    <Typography
-                      color="textPrimary">
-                      {row.writer_name}
-                    </Typography>
-                  </Grid>
-                }
-                secondary={
-                  <Grid
-                    className={classes.subtitle}
-                    container
-                    justify='space-between'>
-                    <Typography
-                      color="textSecondary"
-                      align="left">
-                      {row.category === 1 &&
-                      <span>{`일반`}</span>
-                      }
-                      {row.category === 2 &&
-                      <span className={classes.tip}>{`팁/강좌`}</span>
-                      }
-                      {row.category === 3 &&
-                      <span className={classes.question}>{`질문`}</span>
-                      }
-                      {row.category === 4 &&
-                      <span className={classes.review}>{`사용기/리뷰`}</span>
-                      }
-                      {row.category === 5 &&
-                      `공지`
-                      }
-                    </Typography>
-                    <Typography color="textSecondary">
-                      {this.dateTimeFormatting(row.created_time)}
-                    </Typography>
-                  </Grid>
-                }/>
-            </ListItem>
-          ))}
-          </List>
-        </Hidden>
+                  <Typography color="textPrimary">
+                    {row.title}[{row.comment_count}]
+                  </Typography>
+                  <Typography
+                    color="textPrimary">
+                    {row.writer_name}
+                  </Typography>
+                </Grid>
+              }
+              secondary={
+                <Grid
+                  className={classes.subtitle}
+                  container
+                  justify='space-between'>
+                  <Typography
+                    color="textSecondary"
+                    align="left">
+                    {row.category === 1 &&
+                    <span>{`일반`}</span>
+                    }
+                    {row.category === 2 &&
+                    <span className={classes.tip}>{`팁/강좌`}</span>
+                    }
+                    {row.category === 3 &&
+                    <span className={classes.question}>{`질문`}</span>
+                    }
+                    {row.category === 4 &&
+                    <span className={classes.review}>{`사용기/리뷰`}</span>
+                    }
+                  </Typography>
+                  <Typography color="textSecondary">
+                    {this.dateTimeFormatting(row.created_time)}
+                  </Typography>
+                </Grid>
+              }/>
+          </ListItem>
+        ))}
+        </List>
         <Divider/>
         <div className={classes.pagination}>
           <Pagination
