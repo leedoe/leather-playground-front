@@ -71,9 +71,7 @@ class LoginPage extends React.Component {
 
   passwordOnChange(e) {
     const user = this.state.user
-    const hash = bcrypt.hashSync(e.target.value, this.state.salt)
-    user.password = hash
-    console.log(user)
+    user.password = e.target.value
     this.setState({user})
   }
 
@@ -102,9 +100,12 @@ class LoginPage extends React.Component {
 
   onPushLoginButton(e) {
     this.setState({nowLoading: true})
+    const user = this.state.user
+    const hash = bcrypt.hashSync(user.password, this.state.salt)
+    user.password = hash
     Axios.post('http://127.0.0.1:8000/auth-token/', {
-      username: this.state.user.username,
-      password: this.state.user.password})
+      username: user.username,
+      password: user.password})
       .then((response) => {
         this.setState({nowLoading: false})
         localStorage.setItem('token', response.data.token)
