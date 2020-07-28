@@ -174,7 +174,7 @@ class PostDetail extends React.Component {
   fetchPostsFromServer() {
     this.setState({ nowLoading: true })
 
-    Axios.get(`http://127.0.0.1:8000/api/posts/${this.props.match.params.pk}`).then((response) => {
+    Axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${this.props.match.params.pk}`).then((response) => {
       const post = response.data;
 
       // this.state.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator)
@@ -190,7 +190,7 @@ class PostDetail extends React.Component {
   fetchCommentFromServer() {
     this.setState({ nowLoading: true })
 
-    Axios.get(`http://127.0.0.1:8000/api/comments/?post=${this.props.match.params.pk}`).then((response) => {
+    Axios.get(`${process.env.REACT_APP_SERVERURL}/api/comments/?post=${this.props.match.params.pk}`).then((response) => {
       const comments = response.data;
 
       this.setState({ comments })
@@ -212,7 +212,7 @@ class PostDetail extends React.Component {
     }
 
     Axios.put(
-      `http://127.0.0.1:8000/api/posts/${this.props.match.params.pk}/`,
+      `${process.env.REACT_APP_SERVERURL}/api/posts/${this.props.match.params.pk}/`,
       post,
       config
     ).then((response) => {
@@ -242,7 +242,7 @@ class PostDetail extends React.Component {
     }
 
     Axios.post(
-      `http://127.0.0.1:8000/api/comments/`,
+      `${process.env.REACT_APP_SERVERURL}/api/comments/`,
       data,
       config
     ).then((response) => {
@@ -268,7 +268,7 @@ class PostDetail extends React.Component {
     }
 
     Axios.put(
-      `http://127.0.0.1:8000/api/comments/${comment.pk}/`,
+      `${process.env.REACT_APP_SERVERURL}/api/comments/${comment.pk}/`,
       comment,
       config
     ).then((response) => {

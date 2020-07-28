@@ -6,7 +6,6 @@ import { withRouter } from 'react-router-dom'
 import { withSnackbar } from 'notistack';
 
 import bcrypt from 'bcryptjs'
-import salt from '../salt.js'
 
 const useStyles = theme => ({
   logindiv: {
@@ -26,18 +25,17 @@ const useStyles = theme => ({
 class UserInfo extends React.Component {
   state = {
     user: {},
-    salt: '',
+    salt: process.env.REACT_APP_SERVERURL,
   }
 
   constructor(props) {
     super(props)
     this.state.user = JSON.parse(localStorage.getItem('user'))
-    this.state.salt = salt.salt
   }
 
   passwordOnChange = (e) => {
     const user = this.state.user
-    
+
     const hash = bcrypt.hashSync(e.target.value, this.state.salt)
     user.password = hash
     this.setState({user})
@@ -59,7 +57,7 @@ class UserInfo extends React.Component {
     const user = this.state.user
 
     Axios.put(
-      `http://127.0.0.1:8000/api/users/${this.state.user.username}/`,
+      `${process.env.REACT_APP_SERVERURL}/api/users/${this.state.user.username}/`,
       user,
       config
       ).then((response) => {

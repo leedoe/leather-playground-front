@@ -190,7 +190,7 @@ class Post extends React.Component {
     
     if(this.state.modify === true) {
       Axios.put(
-        `http://127.0.0.1:8000/api/posts/${this.state.post.pk}/`,
+        `${process.env.REACT_APP_SERVERURL}/api/posts/${this.state.post.pk}/`,
         data,
         config
         ).then((response) => {
@@ -203,7 +203,7 @@ class Post extends React.Component {
         })
     } else {
       Axios.post(
-        `http://127.0.0.1:8000/api/posts/`,
+        `${process.env.REACT_APP_SERVERURL}/api/posts/`,
         data,
         config
         ).then((response) => {

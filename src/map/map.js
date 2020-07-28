@@ -43,7 +43,7 @@ class NMap extends React.Component {
       latSpan,
     })
 
-    Axios.get('http://127.0.0.1:8000/api/stores/').then((response) => {
+    Axios.get('${process.env.REACT_APP_SERVERURL}/api/stores/').then((response) => {
       const markers = []
       for(const store of response.data) {
         const marker = new window.naver.maps.Marker({

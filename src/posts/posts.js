@@ -97,7 +97,7 @@ class Posts extends React.Component {
     }
     this.setState({pageNumber})
 
-    axios.get(`http://127.0.0.1:8000/api/posts/?page=${pageNumber}&noticed=false`).then((response) => {
+    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/?page=${pageNumber}&noticed=false`).then((response) => {
       const posts = response.data.results;
       
       const naviCount = response.data.count % 30;

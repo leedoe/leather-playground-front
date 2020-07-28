@@ -4,7 +4,6 @@ import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router-dom';
 import Axios from 'axios';
 import bcrypt from 'bcryptjs'
-import salt from '../salt.js'
 
 const useStyles = theme => ({
   logindiv: {
@@ -50,7 +49,8 @@ class RegisterUser extends React.Component {
       username: false,
       name: false,
       password: false
-    }
+    },
+    salt: process.env.REACT_APP_SERVERURL
   }
 
   constructor(props) {
@@ -59,7 +59,6 @@ class RegisterUser extends React.Component {
     this.passwordOnChange = this.passwordOnChange.bind(this)
     this.nameOnChange = this.nameOnChange.bind(this)
     this.register = this.register.bind(this)
-    this.state.salt = salt.salt
   }
 
   usernameOnChange (e) {
@@ -93,7 +92,7 @@ class RegisterUser extends React.Component {
     })
     const data = this.state.user
     Axios.post(
-      'http://127.0.0.1:8000/api/users/',
+      `${process.env.REACT_APP_SERVERURL}/api/users/`,
       data
       ).then((response) => {
         this.setState({nowLoading: false})

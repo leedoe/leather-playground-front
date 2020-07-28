@@ -33,7 +33,7 @@ class LNaverMap extends React.Component {
   }
 
   componentDidMount() {
-    Axios.get('http://127.0.0.1:8000/api/stores/').then((response) => {
+    Axios.get(`${process.env.REACT_APP_SERVERURL}/api/stores/`).then((response) => {
       this.setState({stores: response.data, nowLoading: false,})
     })
   }

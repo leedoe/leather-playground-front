@@ -6,7 +6,6 @@ import { withRouter, Link } from 'react-router-dom'
 import { withSnackbar } from 'notistack';
 
 import bcrypt from 'bcryptjs'
-import salt from "../salt.js"
 
 const useStyles = theme => ({
   logindiv: {
@@ -49,7 +48,7 @@ class LoginPage extends React.Component {
     }, 
     loginError: false,
     nowLoading: false,
-    salt: ''
+    salt: process.env.REACT_APP_SERVERURL
   }
 
   constructor(props) {
@@ -60,7 +59,6 @@ class LoginPage extends React.Component {
     this.onPushLoginButton = this.onPushLoginButton.bind(this)
     this.inputPasswordKeyPress = this.inputPasswordKeyPress.bind(this)
     this.inputIdKeyPress = this.inputIdKeyPress.bind(this)
-    this.state.salt = salt.salt
   }
 
   usernameOnChange(e) {
@@ -83,7 +81,7 @@ class LoginPage extends React.Component {
     }
 
     Axios.get(
-      'http://127.0.0.1:8000/api/users/me',
+      `${process.env.REACT_APP_SERVERURL}/api/users/me`,
       {
         headers: {
           Authorization: `token ${token}`
@@ -103,7 +101,7 @@ class LoginPage extends React.Component {
     const user = this.state.user
     const hash = bcrypt.hashSync(user.password, this.state.salt)
     user.password = hash
-    Axios.post('http://127.0.0.1:8000/auth-token/', {
+    Axios.post(`${process.env.REACT_APP_SERVERURL}/auth-token/`, {
       username: user.username,
       password: user.password})
       .then((response) => {
