@@ -150,7 +150,6 @@ class Post extends React.Component {
     this.setState({
       editorState: newEditorState,
     })
-    // console.log(convertToRaw(newEditorState.getCurrentContent()))
   }
 
   focus = () => {
@@ -283,7 +282,6 @@ class Post extends React.Component {
   }
 
   handleCategory = (e) => {
-    console.log(e.target.value)
     const value = e.target.value
     const post = this.state.post
     post.category = value

@@ -37,10 +37,9 @@ class UserInfo extends React.Component {
 
   passwordOnChange = (e) => {
     const user = this.state.user
-    // user.password = e.target.value
+    
     const hash = bcrypt.hashSync(e.target.value, this.state.salt)
     user.password = hash
-    console.log(user)
     this.setState({user})
   }
 

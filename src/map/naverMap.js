@@ -39,7 +39,6 @@ class LNaverMap extends React.Component {
   }
 
   changeCurrentStore = (store) => {
-    // console.log(store)
     this.setState({currentStore: store,})
   }
 

@@ -115,7 +115,7 @@ class Posts extends React.Component {
       this.setState({nowLoading: false})
     });
 
-    axios.get(`http://127.0.0.1:8000/api/posts/?noticed=true`).then((response) => {
+    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/?noticed=true`).then((response) => {
       const notices = response.data.results;
       this.setState({notices})
     })
@@ -132,7 +132,6 @@ class Posts extends React.Component {
   }
 
   render () {
-    console.log(this.state.notices)
     const { classes } = this.props;
     return(
       <div className={classes.root}>
