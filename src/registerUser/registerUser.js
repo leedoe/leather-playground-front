@@ -4,6 +4,7 @@ import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router-dom';
 import Axios from 'axios';
 import bcrypt from 'bcryptjs'
+import env from '../salt'
 
 const useStyles = theme => ({
   logindiv: {
@@ -50,7 +51,7 @@ class RegisterUser extends React.Component {
       name: false,
       password: false
     },
-    salt: process.env.REACT_APP_SERVERURL
+    salt: env.salt
   }
 
   constructor(props) {
@@ -59,6 +60,7 @@ class RegisterUser extends React.Component {
     this.passwordOnChange = this.passwordOnChange.bind(this)
     this.nameOnChange = this.nameOnChange.bind(this)
     this.register = this.register.bind(this)
+    console.log(this.state.salt)
   }
 
   usernameOnChange (e) {
@@ -69,9 +71,8 @@ class RegisterUser extends React.Component {
 
   passwordOnChange (e) {
     const user = this.state.user
-
-    const hash = bcrypt.hashSync(e.target.value, this.state.salt)
-    user.password = hash
+    user.password = e.target.value
+    console.log(user.password)
     this.setState({user})
   }
 
@@ -88,12 +89,17 @@ class RegisterUser extends React.Component {
         username: false,
         name: false,
         password: false
-      }
+      },
     })
-    const data = this.state.user
+    console.log(this.state.salt)
+    const user = this.state.user
+    const hash = bcrypt.hashSync(user.password, this.state.salt)
+    console.log(hash)
+    user.password = hash
+
     Axios.post(
       `${process.env.REACT_APP_SERVERURL}/api/users/`,
-      data
+      user
       ).then((response) => {
         this.setState({nowLoading: false})
         this.props.history.replace('/login/')
@@ -102,7 +108,7 @@ class RegisterUser extends React.Component {
         for(const data in error.response.data) {
           const userTextField = this.state.userTextField
           userTextField[data] = true
-          this.setState({userTextField})
+          this.setState({userTextField,})
           let message = error.response.data[data][0]
           message = message.replace('사용자 이름은', '아이디는')
           message = message.replace('Name of User은/는', '닉네임은')
