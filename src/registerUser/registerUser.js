@@ -60,7 +60,6 @@ class RegisterUser extends React.Component {
     this.passwordOnChange = this.passwordOnChange.bind(this)
     this.nameOnChange = this.nameOnChange.bind(this)
     this.register = this.register.bind(this)
-    console.log(this.state.salt)
   }
 
   usernameOnChange (e) {
@@ -72,7 +71,6 @@ class RegisterUser extends React.Component {
   passwordOnChange (e) {
     const user = this.state.user
     user.password = e.target.value
-    console.log(user.password)
     this.setState({user})
   }
 
@@ -91,10 +89,8 @@ class RegisterUser extends React.Component {
         password: false
       },
     })
-    console.log(this.state.salt)
     const user = this.state.user
     const hash = bcrypt.hashSync(user.password, this.state.salt)
-    console.log(hash)
     user.password = hash
 
     Axios.post(
