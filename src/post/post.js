@@ -233,6 +233,11 @@ class Post extends React.Component {
 
   onChangePictureButton = (e) => {
     const reader = new FileReader()
+    const file = e.target.files[0]
+    if(!file.type.match('image.*')) {
+      this.props.enqueueSnackbar('이미지 파일만 등록해주세요.', {variant: 'error'})
+      return
+    }
     reader.readAsDataURL(e.target.files[0])
 
     const {editorState} = this.state

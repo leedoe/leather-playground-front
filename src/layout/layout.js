@@ -116,7 +116,9 @@ class Layout extends React.Component {
                 user={this.state.user}/>
             </Route>
             <Route exact path='/posts/:pk'>
-              <PostDetail user={this.state.user}/>
+              <PostDetail
+                user={this.state.user}
+                isLoggedIn={this.state.isLoggedIn}/>
             </Route>
             <Route exact path='/posts/'>
               <Posts isLoggedIn={this.state.isLoggedIn}/>

@@ -456,7 +456,7 @@ class PostDetail extends React.Component {
                 // </ListItem>
               ))}
             </List>
-
+            {this.props.isLoggedIn === true ?
             <div>
               <TextField
                 className={classes.commenTextarea}
@@ -478,7 +478,8 @@ class PostDetail extends React.Component {
               </Button>
               </div>
             </div>
-
+            :
+            ''}
           </Paper>
           :
           ''

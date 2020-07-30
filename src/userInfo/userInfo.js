@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom'
 import { withSnackbar } from 'notistack';
 
 import bcrypt from 'bcryptjs'
+import env from '../salt'
 
 const useStyles = theme => ({
   logindiv: {
@@ -25,7 +26,7 @@ const useStyles = theme => ({
 class UserInfo extends React.Component {
   state = {
     user: {},
-    salt: process.env.REACT_APP_SERVERURL,
+    salt: env.salt,
   }
 
   constructor(props) {
