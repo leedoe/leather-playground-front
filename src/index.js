@@ -21,7 +21,6 @@ const theme = createMuiTheme({
 ReactDOM.render(
   
   <ThemeProvider theme={theme}>
-    <meta charset="utf-8" />
     <SnackbarProvider maxSnack={3}>
       <BrowserRouter>
         <Layout />
