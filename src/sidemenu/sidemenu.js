@@ -2,25 +2,7 @@ import React from 'react';
 
 import {Link} from 'react-router-dom'
 import List from '@material-ui/core/List';
-import { ListItemText, ListItem, withStyles, Divider, Hidden, Drawer } from '@material-ui/core';
-
-// class SideMenu extends React.Component {
-//   render () {
-//     return (
-//       <nav>
-//         <div>
-//           <Link to='/'>HOME</Link>
-//         </div>
-//         <div>
-//           <Link to='/board'>BOARD</Link>
-//         </div>
-//         <div>
-//           <Link to='/map'>MAP</Link>
-//         </div>
-//       </nav>
-//     )
-//   }
-// }
+import { ListItemText, ListItem, withStyles, Divider, Hidden, Drawer, Button, Menu, MenuItem } from '@material-ui/core';
 
 
 const drawerWidth = 240;
@@ -55,27 +37,100 @@ const useStyles = theme => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  avaterdiv: {
+    padding: theme.spacing(2)
+  },
+  avater: {
+    display: "inline-block",
+  }
 });
 
 class SideMenu extends React.Component {
+  state = {
+    anchorEl: null,
+    anchorMain: null,
+    user: {}
+  }
+
+  constructor(props) {
+    super(props)
+    this.handleClick = this.handleClick.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+    this.handleCloseWithLogout = this.handleCloseWithLogout.bind(this)
+  }
+
+  handleClick(event) {
+    this.setState({anchorEl: event.currentTarget});
+  };
+
+  handleClose() {
+    this.setState({anchorEl: null});
+  };
+
+  handleCloseWithLogout() {
+    this.setState({anchorEl: null})
+    this.props.logout()
+  }
+
   render() {
     const { classes } = this.props;
     const container = this.window !== undefined ? () => window().document.body : undefined;
     const drawer = (
       <div>
         <div className={classes.toolbar}/>
+        
+        <Divider/>
+        <div className={classes.avaterdiv}>
+          { this.props.isLoggedIn === true ?
+          <div>
+            <Button
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              onClick={this.handleClick}>
+              {this.props.user.name}
+            </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={this.state.anchorEl}
+              keepMounted
+              open={Boolean(this.state.anchorEl)}
+              onClose={this.handleClose}>
+              <MenuItem component={Link} to={`/users/${this.state.user.username}`} onClick={this.handleClose}>Profile</MenuItem>
+              <MenuItem onClick={this.handleCloseWithLogout}>Logout</MenuItem>
+            </Menu>
+          </div>  
+          :
+          <Button
+              component={Link}
+              to={`/login`}
+              variant="contained" 
+              color="secondary">
+              
+            로그인
+          </Button>
+          }
+        </div>
         <Divider/>
         <List>
-          <Link to='/posts?page=1'>
-            <ListItem button>
-              <ListItemText primary={`게시판`}/>
-            </ListItem>
-          </Link>
-          <Link to='/map/'>
-            <ListItem button key={`지도`}>
-              <ListItemText primary={`지도`}/>
-            </ListItem>
-          </Link>
+          {this.props.mobileOpen === true ?
+          <ListItem button component={Link} to={`/posts?page=1`} onClick={this.props.handleDrawerToggle}>
+            <ListItemText primary={`게시판`}/>
+          </ListItem>
+          :
+          <ListItem button component={Link} to={`/posts?page=1`}>
+            <ListItemText primary={`게시판`}/>
+          </ListItem>
+          }
+          {this.props.mobileOpen === true ?
+          <ListItem button component={Link} to={`/map`} onClick={this.props.handleDrawerToggle}>
+            <ListItemText primary={`지도`}/>
+          </ListItem>
+          :
+          <ListItem button component={Link} to={`/map`}>
+            <ListItemText primary={`지도`}/>
+          </ListItem>
+          }
+          
         </List>
         <Divider/>
         <List>
@@ -85,12 +140,12 @@ class SideMenu extends React.Component {
 
     return (
       <div className={classes.root}>
-        <nav className={classes.drawer} aria-label='mailbox folders'>
+        <nav className={classes.drawer}>
           <Hidden smUp implementation="css">
             <Drawer
               container={container}
               variant="temporary"
-              anchor={classes.direction === 'rtl' ? 'right' : 'left'}
+              anchor={`left`}
               open={this.props.mobileOpen}
               onClose={this.props.handleDrawerToggle}
               classes={{
