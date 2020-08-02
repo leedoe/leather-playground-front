@@ -32,14 +32,18 @@ class LNaverMap extends React.Component {
     naverMapRef: '',
   }
 
-  componentDidMount() {
-    Axios.get(`${process.env.REACT_APP_SERVERURL}/api/stores/`).then((response) => {
-      this.setState({stores: response.data, nowLoading: false,})
-    })
-  }
+  // componentDidMount() {
+  //   Axios.get(`${process.env.REACT_APP_SERVERURL}/api/stores/`).then((response) => {
+  //     this.setState({stores: response.data, nowLoading: false,})
+  //   })
+  // }
 
   changeCurrentStore = (store) => {
     this.setState({currentStore: store,})
+  }
+
+  loadingControl = (bool) => {
+    this.setState({nowLoading: bool})
   }
 
   render() {
@@ -72,7 +76,9 @@ class LNaverMap extends React.Component {
                 )
               })}
             </NaverMap> */}
-            <NMap changeCurrentStore={this.changeCurrentStore}/>
+            <NMap
+              changeCurrentStore={this.changeCurrentStore}
+              loadingControl={this.loadingControl}/>
           </RenderAfterNavermapsLoaded>
         </div>
         <Divider className={classes.divider}/>
