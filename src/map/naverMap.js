@@ -1,6 +1,5 @@
 import React from 'react'
 import { RenderAfterNavermapsLoaded } from 'react-naver-maps'
-import Axios from 'axios'
 import { Divider, withStyles, Paper, IconButton, Backdrop, CircularProgress } from '@material-ui/core'
 import { withSnackbar } from 'notistack'
 import { withRouter } from 'react-router-dom'
@@ -32,12 +31,6 @@ class LNaverMap extends React.Component {
     naverMapRef: '',
   }
 
-  // componentDidMount() {
-  //   Axios.get(`${process.env.REACT_APP_SERVERURL}/api/stores/`).then((response) => {
-  //     this.setState({stores: response.data, nowLoading: false,})
-  //   })
-  // }
-
   changeCurrentStore = (store) => {
     this.setState({currentStore: store,})
   }
@@ -58,24 +51,6 @@ class LNaverMap extends React.Component {
               ncpClientId={`jjfpybsl0w`}
               error={<p>Maps Load Error</p>}
               loading={<p>Maps Loading...</p>}>
-            {/* <NaverMap
-                naverRef={ref => { this.mapRef = ref }}
-                style={{
-                    width: '100%',
-                    height: '400px',
-                  }}
-                  defaultCenter={{ lat: 37.5668260055, lng: 126.9786567859 }}
-                  defaultZoom={15}>
-              {this.state.stores.map(store => {
-                return (
-                  <Marker
-                    title={store.name}
-                    key={store.id}
-                    position={{lat: store.x, lng: store.y}}
-                    onClick={() => {this.setState({currentStore: store,})}}/>
-                )
-              })}
-            </NaverMap> */}
             <NMap
               changeCurrentStore={this.changeCurrentStore}
               loadingControl={this.loadingControl}/>
