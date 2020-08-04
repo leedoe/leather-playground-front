@@ -99,6 +99,16 @@ class NMap extends React.Component {
     isShowLeatherStores: true,
     isShowCommonStores: true,
     isShowMaterialStores: true,
+    center: {lat: 37.5668260055, lng:126.9786567859}
+  }
+
+  showPosition = (position) => {
+    this.setState({
+      center: {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude 
+      }
+    })
   }
 
   componentDidMount() {
@@ -115,6 +125,8 @@ class NMap extends React.Component {
       lngSpan,
       latSpan,
     })
+
+    navigator.geolocation.getCurrentPosition(this.showPosition)
 
     new window.naver.maps.Event.addListener(this.mapRef.instance, 'zoom_changed', () => {
       this.getStores()
@@ -257,7 +269,8 @@ class NMap extends React.Component {
         <NaverMap
           naverRef={ref => { this.mapRef = ref }}
           className={classes.map}
-          defaultCenter={{ lat: 37.5668260055, lng: 126.9786567859 }}
+          center={this.state.center}
+          onCenterChanged={center => this.setState({center})}
           defaultZoom={15}>
         </NaverMap>
         <FormGroup row>
