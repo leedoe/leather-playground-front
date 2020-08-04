@@ -3,7 +3,7 @@ import { withStyles, Backdrop, CircularProgress, Paper, Typography, Grid, Divide
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Axios from 'axios';
 import moment from 'moment';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 import { CompositeDecorator, EditorState, Editor, convertFromRaw } from 'draft-js';
 import Instagram from '../instaform/insta';
@@ -57,14 +57,16 @@ const useStyles = theme => ({
     marginLeft: theme.spacing(1)
   },
   editor: {
-    // backgroundColor: 'white',
-    // marginTop: theme.spacing(2),
     padding: theme.spacing(2),
-    // minHeight: theme.spacing(50),
     color: 'white',
     borderWidth: "2px",
     borderColor: 'white',
     borderStyle: 'solid',
+  },
+  listDiv: {
+    textAlign: 'right',
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
   }
 });
 
@@ -396,21 +398,24 @@ class PostDetail extends React.Component {
                 {this.datetimeFormatting(this.state.post.created_time)}
               </Typography>
             </Grid>
-            <Divider />
-            {/* <div dangerouslySetInnerHTML={{ __html: this.state.post.content }}>
-
-            </div> */}
             <div className={classes.editor}>
               <Editor
                 blockRendererFn={this.imageBlockFn}
                 ref='editor'
                 editorState={this.state.editorState}
-                // onChange={this.editorStateChanged}
                 readOnly={true}
                 />
             </div>
             
-
+            <div className={classes.listDiv}>
+              <Button
+                component={Link}
+                to={`/posts/`}
+                color='primary'
+                variant="contained">
+                  목록
+              </Button>
+            </div>
             <Divider />
             <div className={classes.commentDiv}>
               <Typography variant='h5'>
@@ -475,7 +480,7 @@ class PostDetail extends React.Component {
                   color="primary"
                   variant="contained">
                   등록
-              </Button>
+                </Button>
               </div>
             </div>
             :
