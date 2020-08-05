@@ -6,8 +6,8 @@ import Axios from 'axios'
 const useStyles = theme => ({
   results: {
     position: 'absolute',
-    zIndex: '10',
-    backgroundColor: 'red'
+    zIndex: '2',
+    backgroundColor: theme.palette.background.paper
   }
 });
 
@@ -72,6 +72,7 @@ class AddressField extends React.Component {
             {this.state.addresses.map(address => (
               <ListItem
                 key={address.addressKorean}
+                button
                 onClick={() => {
                   this.props.setCenter(address.center)
                   this.setState({addresses: []})
