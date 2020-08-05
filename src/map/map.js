@@ -9,6 +9,7 @@ import workshopMarkerIcon from '../img/marker-default.png'
 import leatherStoreMarkerIcon from '../img/marker-leatherstore.png'
 import materialStoreMarkerIcon from '../img/marker-materialstore.png'
 import commonStoreMarkerIcon from '../img/marker-commonStore.png'
+import AddressField from './addressfield'
 
 const useStyles = theme => ({
   divider: {
@@ -27,6 +28,9 @@ const useStyles = theme => ({
     height: '400px',
     marginBottom: theme.spacing(3)
   },
+  addressfield: {
+    marginBottom: theme.spacing(2)
+  }
 });
 
 const WorkshopSwitch = withStyles({
@@ -89,17 +93,13 @@ class NMap extends React.Component {
     leatherstores: [],
     commonstores: [],
     materialstores: [],
-    bounds: '',
-    southWest: '',
-    northEast: '',
-    lngSpan: '',
-    latSpan: '',
     isShowWorkShops: true,
     isShowToolStores: true,
     isShowLeatherStores: true,
     isShowCommonStores: true,
     isShowMaterialStores: true,
-    center: {lat: 37.5668260055, lng:126.9786567859}
+    center: {lat: 37.5668260055, lng:126.9786567859},
+    map: ''
   }
 
   showPosition = (position) => {
@@ -111,32 +111,46 @@ class NMap extends React.Component {
     })
   }
 
+  setCenter = (center) => {
+    this.setState({center})
+  }
+
   componentDidMount() {
-    const bounds = this.mapRef.getBounds()
-    const southWest = bounds.getSW()
-    const northEast = bounds.getNE()
-    const lngSpan = northEast.lng() - southWest.lng()
-    const latSpan = northEast.lat() - southWest.lat()
-
-    this.setState({
-      bounds,
-      southWest,
-      northEast,
-      lngSpan,
-      latSpan,
-    })
-
+    this.state.map = this.mapRef.instance
     navigator.geolocation.getCurrentPosition(this.showPosition)
 
-    new window.naver.maps.Event.addListener(this.mapRef.instance, 'zoom_changed', () => {
+    new window.naver.maps.Event.addListener(this.state.map, 'zoom_changed', () => {
       this.getStores()
+      // this.updateMarkers(this.state.workshops)
+      // this.updateMarkers(this.state.toolstores)
+      // this.updateMarkers(this.state.leatherstores)
+      // this.updateMarkers(this.state.commonstores)
+      // this.updateMarkers(this.state.materialstores)
     });
   
-    new window.naver.maps.Event.addListener(this.mapRef.instance, 'dragend', () => {
+    new window.naver.maps.Event.addListener(this.state.map, 'dragend', () => {
+      this.getStores()
+      // this.updateMarkers(this.state.workshops)
+      // this.updateMarkers(this.state.toolstores)
+      // this.updateMarkers(this.state.leatherstores)
+      // this.updateMarkers(this.state.commonstores)
+      // this.updateMarkers(this.state.materialstores)
+    });
+
+    new window.naver.maps.Event.addListener(this.state.map, 'idle', () => {
       this.getStores()
     });
 
     this.getStores()
+
+    // window.naver.maps.Service.geocode({address: '조마루로 135'}, (status, response) => {
+    //   if (status === window.naver.maps.Service.Status.ERROR) {
+    //     return console.log('ERROR')
+    //   }
+
+    //   console.log(response)
+    // })
+    // this.setState({map: this.mapRef.instance})
   }
 
   initMarker = (store, icon, isShow) => {
@@ -149,7 +163,7 @@ class NMap extends React.Component {
     let marker
     if(!this.isDucplication(markerOptions, this.state.workshops)) {
       if(isShow) {
-        markerOptions.map = this.mapRef.instance
+        markerOptions.map = this.state.map
       }
       marker = new window.naver.maps.Marker(markerOptions)
 
@@ -172,6 +186,7 @@ class NMap extends React.Component {
     return false
   }
 
+  // 마커를 카테고리에 따라서 나누기
   storeDivider = (stores) => {
     for(const store of stores) {
       if(store.category === 0) { // workshop
@@ -204,7 +219,7 @@ class NMap extends React.Component {
   }
 
   getStores = () => {
-    const bounds = this.mapRef.getBounds()
+    const bounds = this.state.map.getBounds()
     const southWest = bounds.getSW()
     const northEast = bounds.getNE()
     this.props.loadingControl(true)
@@ -218,7 +233,7 @@ class NMap extends React.Component {
   showMarkers = (markers) => {
     for(const marker of markers) {
       if(!marker.getMap()) {
-        marker.setMap(this.mapRef.instance)
+        marker.setMap(this.state.map)
       } 
     }
   }
@@ -234,13 +249,13 @@ class NMap extends React.Component {
   
 
   updateMarkers = (markers) => {
-    const mapBounds = this.mapRef.getBounds()
+    const mapBounds = this.state.map.getBounds()
     for(const marker of markers) {
       if (mapBounds.hasLatLng(marker.position)) {
         if(marker.getMap()) {
           continue
         } else {
-          marker.setMap(this.mapRef.instance)
+          marker.setMap(this.state.map)
         }
       } else {
         if(!marker.getMap()) {
@@ -266,11 +281,16 @@ class NMap extends React.Component {
     const {classes} = this.props
     return (
       <div>
+        <div className={classes.addressfield}>
+          <AddressField setCenter={this.setCenter}/>
+        </div>
         <NaverMap
           naverRef={ref => { this.mapRef = ref }}
           className={classes.map}
           center={this.state.center}
-          onCenterChanged={center => this.setState({center})}
+          onCenterChanged={center => {
+            this.setState({center})
+          }}
           defaultZoom={15}>
         </NaverMap>
         <FormGroup row>
