@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Fab, Grid, Divider } from '@material-ui/core';
+import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Fab, Grid, Divider, TextField } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 
 import { Pagination, PaginationItem } from '@material-ui/lab'
@@ -29,15 +29,22 @@ const useStyles = theme => ({
   pagination: {
     display: 'flex',
     justifyContent: 'center',
-    padding: 8
+    padding: theme.spacing(1)
   },
   floatingButton: {
     margin: 0,
     top: 'auto',
-    right: 20,
-    bottom: 20,
+    right: theme.spacing(3),
+    bottom: theme.spacing(3),
     left: 'auto',
     position: 'fixed',
+  },
+  searchPannel: {
+    marginRight: theme.spacing(2),
+    textAlign: 'right'
+  },
+  searchForm: {
+    width: theme.spacing(100)
   },
   tip: {
     color: 'skyblue'
@@ -59,7 +66,8 @@ class Posts extends React.Component {
     count: 0,
     posts: [],
     notices: [],
-    pageNumber: 1
+    pageNumber: 1,
+    params: []
   }
 
   constructor(props) {
@@ -77,6 +85,23 @@ class Posts extends React.Component {
     }
   }
 
+  getAllDataFromParameter = () => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const data = []
+
+    let pageNumber = this.getDataFromParameter('page')
+    if (pageNumber == null) {
+      data.push(['pageNumber', 1])
+    }
+    
+    for(const [key, value] of urlParams) {
+      data.push([key, value])
+    }
+
+    this.state.params = data
+    return data
+  }
+
   dateTimeFormatting(datetime) {
     const today = moment().format('YYYY-MM-DD')
     const created_time = moment(datetime)
@@ -89,15 +114,21 @@ class Posts extends React.Component {
     }
   }
 
+  getNotices = () => {
+    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/?noticed=true`).then((response) => {
+      const notices = response.data.results;
+      this.setState({notices})
+    })
+  }
+
   fetchPostsFromServer = () => {
     this.setState({nowLoading: true})
-    let pageNumber = this.getDataFromParameter('page')
-    if (pageNumber == null) {
-      pageNumber = 1;
+    let parameters = `?`
+    for(const [key, value] of this.state.params) {
+      parameters += `${key}=${value}&`
     }
-    this.setState({pageNumber})
 
-    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/?page=${pageNumber}&noticed=false`).then((response) => {
+    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${parameters}noticed=false`).then((response) => {
       const posts = response.data.results;
       
       const naviCount = response.data.count % 30;
@@ -114,20 +145,37 @@ class Posts extends React.Component {
       this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
       this.setState({nowLoading: false})
     });
-
-    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/?noticed=true`).then((response) => {
-      const notices = response.data.results;
-      this.setState({notices})
-    })
   }
 
   componentDidMount() {
+    this.getAllDataFromParameter()
+    console.log(this.getDataFromParameter('search'))
+    if(this.getDataFromParameter('search') === null) {
+      this.getNotices()
+    } else {
+      this.setState({notices: []})
+    }
     this.fetchPostsFromServer();
   }
 
   componentDidUpdate(prevPros, prevState) {
     if(this.props.location.search !== prevPros.location.search) {
+      this.getAllDataFromParameter()
+      if(this.getDataFromParameter('search') === null) {
+        this.getNotices()
+      } else {
+        this.setState({notices: []})
+      }
       this.fetchPostsFromServer();
+    }
+  }
+
+  searchKeyInput = (e) => {
+    if(e.key === 'Enter') {
+      this.props.history.push({
+        pathname: `/posts/`,
+        search: `?search=${e.target.value}`,
+      })
     }
   }
 
@@ -213,6 +261,14 @@ class Posts extends React.Component {
         ))}
         </List>
         <Divider/>
+        <div className={classes.searchPannel}>
+          {/* <form onKeyPress={this.searchKeyInput}> */}
+            <TextField
+              id='search'
+              label='search'
+              onKeyPress={this.searchKeyInput}/>
+          {/* </form> */}
+        </div>
         <div className={classes.pagination}>
           <Pagination
             page={parseInt(this.state.pageNumber)}
@@ -243,4 +299,4 @@ class Posts extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(Posts)));
+export default withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(Posts)));
