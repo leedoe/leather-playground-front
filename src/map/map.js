@@ -121,6 +121,7 @@ class NMap extends React.Component {
 
     new window.naver.maps.Event.addListener(this.state.map, 'zoom_changed', () => {
       this.getStores()
+      console.log(this.state.workshops.length)
       // this.updateMarkers(this.state.workshops)
       // this.updateMarkers(this.state.toolstores)
       // this.updateMarkers(this.state.leatherstores)
@@ -130,6 +131,7 @@ class NMap extends React.Component {
   
     new window.naver.maps.Event.addListener(this.state.map, 'dragend', () => {
       this.getStores()
+      console.log(this.state.workshops.length)
       // this.updateMarkers(this.state.workshops)
       // this.updateMarkers(this.state.toolstores)
       // this.updateMarkers(this.state.leatherstores)
@@ -153,7 +155,7 @@ class NMap extends React.Component {
     // this.setState({map: this.mapRef.instance})
   }
 
-  initMarker = (store, icon, isShow) => {
+  initMarker = (store, icon, isShow, shopList) => {
     const markerOptions = {
       position: {lat: store.x, lng: store.y},
       title: store.name,
@@ -161,7 +163,7 @@ class NMap extends React.Component {
     }
 
     let marker
-    if(!this.isDucplication(markerOptions, this.state.workshops)) {
+    if(!this.isDucplication(markerOptions, shopList)) {
       if(isShow) {
         markerOptions.map = this.state.map
       }
@@ -177,9 +179,9 @@ class NMap extends React.Component {
 
   isDucplication = (markerOptions, stores) => {
     for (const store of stores) {
-      if (store.name === markerOptions.title &&
-          store.position.x === markerOptions.position.lat &&
-          store.position.y === markerOptions.position.lng) {
+      if (store.title === markerOptions.title &&
+          store.position.x === markerOptions.position.lng &&
+          store.position.y === markerOptions.position.lat) {
         return true
       }
     }
@@ -190,27 +192,27 @@ class NMap extends React.Component {
   storeDivider = (stores) => {
     for(const store of stores) {
       if(store.category === 0) { // workshop
-        const marker = this.initMarker(store, workshopMarkerIcon, this.state.isShowWorkShops)
+        const marker = this.initMarker(store, workshopMarkerIcon, this.state.isShowWorkShops, this.state.workshops)
         if(marker !== undefined) {
           this.state.workshops.push(marker)
         }
       } else if(store.category === 1) { // tool store
-        const marker = this.initMarker(store, null, this.state.isShowToolStores)
+        const marker = this.initMarker(store, null, this.state.isShowToolStores, this.state.toolstores)
         if(marker !== undefined) {
           this.state.toolstores.push(marker)
         }
       } else if(store.category === 2) { // leather store
-        const marker = this.initMarker(store, leatherStoreMarkerIcon, this.state.isShowLeatherStores)
+        const marker = this.initMarker(store, leatherStoreMarkerIcon, this.state.isShowLeatherStores, this.state.leatherstores)
         if(marker !== undefined) {
           this.state.leatherstores.push(marker)
         }
       } else if(store.category === 3) { // common store
-        const marker = this.initMarker(store, commonStoreMarkerIcon, this.state.isShowCommonStores)
+        const marker = this.initMarker(store, commonStoreMarkerIcon, this.state.isShowCommonStores, this.state.commonstores)
         if(marker !== undefined) {
           this.state.commonstores.push(marker)
         }
       } else if(store.category === 4) { // material store
-        const marker = this.initMarker(store, materialStoreMarkerIcon, this.state.isShowMaterialStores)
+        const marker = this.initMarker(store, materialStoreMarkerIcon, this.state.isShowMaterialStores, this.state.materialstores)
         if(marker !== undefined) {
           this.state.materialstores.push(marker)
         }
