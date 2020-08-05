@@ -128,7 +128,7 @@ class Posts extends React.Component {
       parameters += `${key}=${value}&`
     }
 
-    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${parameters}`).then((response) => {
+    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${parameters}noticed=false`).then((response) => {
       const posts = response.data.results;
       
       const naviCount = response.data.count % 30;
