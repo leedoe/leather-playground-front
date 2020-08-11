@@ -95,7 +95,7 @@ class SideMenu extends React.Component {
               keepMounted
               open={Boolean(this.state.anchorEl)}
               onClose={this.handleClose}>
-              <MenuItem component={Link} to={`/users/${this.state.user.username}`} onClick={this.handleClose}>Profile</MenuItem>
+              <MenuItem component={Link} to={`/users/${this.props.user.username}`} onClick={this.handleClose}>Profile</MenuItem>
               <MenuItem onClick={this.handleCloseWithLogout}>Logout</MenuItem>
             </Menu>
           </div>  
@@ -128,6 +128,15 @@ class SideMenu extends React.Component {
           :
           <ListItem button component={Link} to={`/map`}>
             <ListItemText primary={`지도`}/>
+          </ListItem>
+          }
+          {this.props.mobileOpen === true ?
+          <ListItem button component={Link} to={`/meta/`} onClick={this.props.handleDrawerToggle}>
+            <ListItemText primary={`쇼핑몰검색`}/>
+          </ListItem>
+          :
+          <ListItem button component={Link} to={`/meta`}>
+            <ListItemText primary={`쇼핑몰검색`}/>
           </ListItem>
           }
           
