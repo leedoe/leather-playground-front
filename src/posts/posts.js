@@ -99,6 +99,7 @@ class Posts extends React.Component {
     }
 
     this.state.params = data
+    this.setState({pageNumber: pageNumber})
     return data
   }
 
@@ -272,7 +273,7 @@ class Posts extends React.Component {
         <div className={classes.pagination}>
           <Pagination
             page={parseInt(this.state.pageNumber)}
-            count={this.state.navigationCount}
+            count={Math.ceil(this.state.count / 20)}
             shape={`rounded`}
             renderItem={(item) => (
               <PaginationItem
