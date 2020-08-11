@@ -37,8 +37,7 @@ class UserInfo extends React.Component {
   passwordOnChange = (e) => {
     const user = this.state.user
 
-    const hash = bcrypt.hashSync(e.target.value, this.state.salt)
-    user.password = hash
+    user.password = e.target.value
     this.setState({user})
   }
 
@@ -51,11 +50,13 @@ class UserInfo extends React.Component {
   onClickModifyButton = () => {
     const config = {
       headers: {
-        Authorization: `token ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem('token')}`
       }
     }
     
     const user = this.state.user
+    const hash = bcrypt.hashSync(user.password, this.state.salt)
+    user.password = hash
 
     Axios.put(
       `${process.env.REACT_APP_SERVERURL}/api/users/${this.state.user.username}/`,
@@ -74,7 +75,7 @@ class UserInfo extends React.Component {
     
     return (
       <div>
-        <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
+        <Backdrop className={classes.backdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
         <Paper className={classes.logindiv}>

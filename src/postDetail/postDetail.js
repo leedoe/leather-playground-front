@@ -209,7 +209,7 @@ class PostDetail extends React.Component {
 
     const config = {
       headers: {
-        Authorization: `token ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem('token')}`
       }
     }
 
@@ -239,7 +239,7 @@ class PostDetail extends React.Component {
 
     const config = {
       headers: {
-        Authorization: `token ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem('token')}`
       }
     }
 
@@ -265,7 +265,7 @@ class PostDetail extends React.Component {
 
     const config = {
       headers: {
-        Authorization: `token ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem('token')}`
       }
     }
 

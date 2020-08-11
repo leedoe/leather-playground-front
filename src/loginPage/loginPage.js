@@ -85,7 +85,7 @@ class LoginPage extends React.Component {
       `${process.env.REACT_APP_SERVERURL}/api/users/me`,
       {
         headers: {
-          Authorization: `token ${token}`
+          Authorization: `JWT ${token}`
         }
       }).then((response) => {
         const user = response.data
@@ -102,7 +102,7 @@ class LoginPage extends React.Component {
     const user = this.state.user
     const hash = bcrypt.hashSync(user.password, this.state.salt)
     user.password = hash
-    Axios.post(`${process.env.REACT_APP_SERVERURL}/auth-token/`, {
+    Axios.post(`${process.env.REACT_APP_SERVERURL}/api-token-auth/`, {
       username: user.username,
       password: user.password})
       .then((response) => {
