@@ -92,6 +92,7 @@ class MetaSearch extends React.Component {
       } else {
         this.setState({items: [], count: 0, pageNumber: 0})
       }
+      window.scrollTo(0, 0)
     }
   }
 
