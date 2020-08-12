@@ -7,6 +7,7 @@ import { withRouter, Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 import { CompositeDecorator, EditorState, Editor, convertFromRaw } from 'draft-js';
 import Instagram from '../instaform/insta';
+import { connect } from 'react-redux';
 
 const useStyles = theme => ({
   root: {
@@ -233,8 +234,8 @@ class PostDetail extends React.Component {
     const data = {
       post: this.state.post.pk,
       content: this.state.writedComment,
-      writer_name: JSON.parse(localStorage.getItem('user')).name,
-      writer: JSON.parse(localStorage.getItem('user')).pk
+      writer_name: this.props.user.name,
+      writer: this.props.user.pk
     }
 
     const config = {
@@ -494,4 +495,10 @@ class PostDetail extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(PostDetail)));
+const mapStateToProps = (state, ownProps) => ({
+  isLogin: state.isLogin,
+  user: state.user,
+  ownProps
+})
+
+export default connect(mapStateToProps)(withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(PostDetail))));

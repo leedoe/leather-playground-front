@@ -99,10 +99,7 @@ class Layout extends React.Component {
         <LeatherAppBar handleDrawerToggle={this.handleDrawerToggle}/>
         <SideMenu
           mobileOpen={this.state.mobileOpen}
-          handleDrawerToggle={this.handleDrawerToggle}
-          isLoggedIn={this.state.isLoggedIn}
-          logout={this.logout}
-          user={this.state.user}/>
+          handleDrawerToggle={this.handleDrawerToggle}/>
         <main className={classes.content}>
           <div className={classes.toolbar}/>
           <Switch>
@@ -110,28 +107,25 @@ class Layout extends React.Component {
               <LNaverMap/>
             </Route>
             <Route exact path='/post/'>
-              <Post user={this.state.user}/>
+              <Post/>
             </Route>
             <Route exact path='/post/:pk'>
-              <Post
-                user={this.state.user}/>
+              <Post/>
             </Route>
             <Route exact path='/posts/:pk'>
-              <PostDetail
-                user={this.state.user}
-                isLoggedIn={this.state.isLoggedIn}/>
+              <PostDetail/>
             </Route>
             <Route exact path='/posts/'>
-              <Posts isLoggedIn={this.state.isLoggedIn}/>
+              <Posts/>
             </Route>
             <Route exact path='/login/'>
-              <LoginPage login={this.login} setUserData={this.setUserData}/>
+              <LoginPage/>
             </Route>
             <Route path='/users/register/'>
-              <RegisterUser setUserData={this.setUserData}/>
+              <RegisterUser/>
             </Route>
             <Route path='/users/'>
-              <UserInfo setUserData={this.setUserData}/>
+              <UserInfo/>
             </Route>
             <Route path='/meta/'>
               <MetaSearch/>

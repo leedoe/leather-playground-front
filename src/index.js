@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
-
-import Layout from './layout/layout';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core';
 import { SnackbarProvider } from 'notistack';
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+
+import Layout from './layout/layout';
+import './index.css';
+import * as serviceWorker from './serviceWorker';
+import userReducer from './redux/reducers/user';
 
 
 const theme = createMuiTheme({
@@ -18,12 +21,16 @@ const theme = createMuiTheme({
   }
 })
 
+const store = createStore(userReducer)
+
 ReactDOM.render(
   
   <ThemeProvider theme={theme}>
     <SnackbarProvider maxSnack={3}>
       <BrowserRouter>
-        <Layout />
+        <Provider store={store}>
+          <Layout />
+        </Provider>
       </BrowserRouter>
     </SnackbarProvider>
   </ThemeProvider>,

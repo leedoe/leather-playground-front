@@ -3,6 +3,8 @@ import React from 'react';
 import {Link} from 'react-router-dom'
 import List from '@material-ui/core/List';
 import { ListItemText, ListItem, withStyles, Divider, Hidden, Drawer, Button, Menu, MenuItem } from '@material-ui/core';
+import { connect } from 'react-redux'
+import { logout } from '../redux/actions';
 
 
 const drawerWidth = 240;
@@ -48,8 +50,7 @@ const useStyles = theme => ({
 class SideMenu extends React.Component {
   state = {
     anchorEl: null,
-    anchorMain: null,
-    user: {}
+    anchorMain: null
   }
 
   constructor(props) {
@@ -69,6 +70,7 @@ class SideMenu extends React.Component {
 
   handleCloseWithLogout() {
     this.setState({anchorEl: null})
+    // this.props.logout()
     this.props.logout()
   }
 
@@ -81,7 +83,7 @@ class SideMenu extends React.Component {
         
         <Divider/>
         <div className={classes.avaterdiv}>
-          { this.props.isLoggedIn === true ?
+          { this.props.isLogin === true ?
           <div>
             <Button
               aria-controls="simple-menu"
@@ -184,5 +186,14 @@ class SideMenu extends React.Component {
   }
 }
 
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
+})
 
-export default withStyles(useStyles, { withTheme: true })(SideMenu);
+const mapStateToProps = (state, ownProps) => ({
+  isLogin: state.isLogin,
+  user: state.user,
+  ownProps
+})
+
+export default connect(mapStateToProps, mapDispatchToProps )(withStyles(useStyles, { withTheme: true })(SideMenu));

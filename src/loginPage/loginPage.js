@@ -7,6 +7,8 @@ import { withSnackbar } from 'notistack';
 
 import bcrypt from 'bcryptjs'
 import env from '../salt'
+import { connect } from 'react-redux';
+import { login, setUser } from '../redux/actions';
 
 const useStyles = theme => ({
   logindiv: {
@@ -89,8 +91,11 @@ class LoginPage extends React.Component {
         }
       }).then((response) => {
         const user = response.data
-        localStorage.setItem('user', JSON.stringify(user))
-        this.props.setUserData(user)
+        // localStorage.setItem('user', JSON.stringify(user))
+        // this.props.setUserData(user)
+        this.props.setUser(user)
+        this.setState({nowLoading: false})
+        this.props.enqueueSnackbar('정상적으로 로그인 되었습니다.', {variant: 'success'})
         this.props.history.replace('/posts')
       }).catch((e) => {
         
@@ -106,11 +111,8 @@ class LoginPage extends React.Component {
       username: user.username,
       password: user.password})
       .then((response) => {
-        this.setState({nowLoading: false})
-        localStorage.setItem('token', response.data.token)
+        this.props.login(response.data.access, response.data.refresh)
         this.getAndSetUserdata()
-        this.props.login()
-        this.props.enqueueSnackbar('정상적으로 로그인 되었습니다.', {variant: 'success'})
       }).catch((e) => {
         this.setState({nowLoading: false})
         this.setState({loginError: true})
@@ -180,4 +182,14 @@ class LoginPage extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(LoginPage)));
+const reduxController = dispatch => ({
+  login: (token, refresh) => dispatch(login(token, refresh)),
+  setUser: user => dispatch(setUser(user))
+})
+
+const mapStateToProps = (state, ownProps) => ({
+  isLogin: state.isLogIn,
+  ownProps
+})
+
+export default connect(mapStateToProps, reduxController)(withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(LoginPage))));

@@ -8,6 +8,8 @@ import { Pagination, PaginationItem } from '@material-ui/lab'
 
 import { Link, withRouter } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
+import { connect } from 'react-redux';
+import { logout } from '../redux/actions';
 
 
 const useStyles = theme => ({
@@ -284,7 +286,7 @@ class Posts extends React.Component {
             )}/>
         </div>
         {
-          this.props.isLoggedIn === true ?
+          this.props.isLogin === true ?
           <Fab 
             className={classes.floatingButton}
             color="secondary"
@@ -300,4 +302,9 @@ class Posts extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(Posts)));
+const mapStateToProps = (state, ownProps) => ({
+  isLogin: state.isLogin,
+  ownProps
+})
+
+export default connect(mapStateToProps)(withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(Posts))));
