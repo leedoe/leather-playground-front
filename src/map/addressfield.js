@@ -25,7 +25,6 @@ class AddressField extends React.Component {
     }
 
     Axios.get(`${process.env.REACT_APP_SERVERURL}/api/address/`, config).then(response => {
-      console.log(response)
       if(response.data.status === 'OK') {
         const addresses = []
         for(const address of response.data.addresses) {
@@ -37,7 +36,6 @@ class AddressField extends React.Component {
             }
           })
         }
-        console.log(addresses)
         this.setState({addresses})
       } else {
         this.setState({addresses: []})
