@@ -27,13 +27,8 @@ const useStyles = theme => ({
 
 class UserInfo extends React.Component {
   state = {
-    user: {},
+    user: this.props.user,
     salt: env.salt,
-  }
-
-  constructor(props) {
-    super(props)
-    this.state.user = JSON.parse(localStorage.getItem('user'))
   }
 
   passwordOnChange = (e) => {
@@ -106,7 +101,7 @@ class UserInfo extends React.Component {
                 className={classes.leftButton}
                 fullWidth={true}
                 variant="contained" 
-                color="secondary"
+                color="primary"
                 onClick={this.onClickModifyButton}
                 >
               수정

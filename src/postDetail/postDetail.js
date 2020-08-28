@@ -10,17 +10,6 @@ import Instagram from '../instaform/insta';
 import { connect } from 'react-redux';
 
 const useStyles = theme => ({
-  root: {
-    // width: '100%',
-    backgroundColor: theme.palette.background.paper,
-    margin: '0 auto',
-    [theme.breakpoints.up('lg')]: {
-      width: "70%"
-    },
-    [theme.breakpoints.up('md')]: {
-      width: "80%"
-    }
-  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
@@ -32,7 +21,7 @@ const useStyles = theme => ({
     width: "80%"
   },
   subtitle: {
-    paddingTop: theme.spacing(1),
+    // paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1)
   },
   commentDiv: {
@@ -58,10 +47,10 @@ const useStyles = theme => ({
     marginLeft: theme.spacing(1)
   },
   editor: {
-    padding: theme.spacing(2),
-    color: 'white',
+    padding: theme.spacing(1),
+    // color: 'white',
     borderWidth: "2px",
-    borderColor: 'white',
+    borderColor: '#e0e0e0',
     borderStyle: 'solid',
   },
   listDiv: {
@@ -136,15 +125,6 @@ class PostDetail extends React.Component {
 
   constructor(props) {
     super(props)
-    this.handleClick = this.handleClick.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-    this.onClickDeleteButton = this.onClickDeleteButton.bind(this)
-    this.onClickModifyButton = this.onClickModifyButton.bind(this)
-    this.onChangeComment = this.onChangeComment.bind(this)
-    this.onClickConfirmButton = this.onClickConfirmButton.bind(this)
-    this.deleteComment = this.deleteComment.bind(this)
-    this.fetchCommentFromServer = this.fetchCommentFromServer.bind(this)
-
     this.state.editorState = EditorState.createEmpty(compositeDecorator)
   }
 
@@ -154,15 +134,15 @@ class PostDetail extends React.Component {
     })
   }
 
-  handleClick(event) {
+  handleClick = (event) => {
     this.setState({ anchorEl: event.currentTarget })
   }
 
-  handleClose() {
+  handleClose = () => {
     this.setState({ anchorEl: null })
   }
 
-  datetimeFormatting(datetime) {
+  datetimeFormatting = (datetime) => {
     const today = moment().format('YYYY-MM-DD')
     const created_time = moment(datetime)
     const createdTimeDate = created_time.format('YYYY-MM-DD')
@@ -174,7 +154,7 @@ class PostDetail extends React.Component {
     }
   }
 
-  fetchPostsFromServer() {
+  fetchPostsFromServer = () => {
     this.setState({ nowLoading: true })
 
     Axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${this.props.match.params.pk}`).then((response) => {
@@ -182,15 +162,15 @@ class PostDetail extends React.Component {
 
       // this.state.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator)
       this.setState({
-        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator)
+        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator),
+        post,
+        nowLoading: false,
       })
-      this.setState({ post })
-      this.setState({ nowLoading: false })
     }).catch((e) => {
     });
   }
 
-  fetchCommentFromServer() {
+  fetchCommentFromServer = () => {
     this.setState({ nowLoading: true })
 
     Axios.get(`${process.env.REACT_APP_SERVERURL}/api/comments/?post=${this.props.match.params.pk}`).then((response) => {
@@ -202,7 +182,7 @@ class PostDetail extends React.Component {
     });
   }
 
-  onClickDeleteButton() {
+  onClickDeleteButton = () => {
     this.setState({ nowLoading: true })
     this.setState({ anchorEl: null });
     const post = this.state.post
@@ -228,7 +208,7 @@ class PostDetail extends React.Component {
     })
   }
 
-  onClickConfirmButton() {
+  onClickConfirmButton = () => {
     this.setState({ nowLoading: true })
 
     const data = {
@@ -259,7 +239,7 @@ class PostDetail extends React.Component {
     })
   }
 
-  deleteComment(inputComment) {
+  deleteComment = (inputComment) => {
     this.setState({ nowLoading: true })
     const comment = inputComment
     comment.deleted = true
@@ -285,7 +265,7 @@ class PostDetail extends React.Component {
     })
   }
 
-  dateTimeFormatting(datetime) {
+  dateTimeFormatting = (datetime) => {
     const today = moment().format('YYYY-MM-DD')
     const created_time = moment(datetime)
     const createdTimeDate = created_time.format('YYYY-MM-DD')
@@ -297,7 +277,7 @@ class PostDetail extends React.Component {
     }
   }
 
-  onClickModifyButton() {
+  onClickModifyButton = () => {
     this.setState({ anchorEl: null })
     this.props.history.push({
       pathname: `/post/${this.state.post.pk}`,
@@ -307,12 +287,12 @@ class PostDetail extends React.Component {
     })
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.fetchPostsFromServer()
     this.fetchCommentFromServer()
   }
 
-  onChangeComment(e) {
+  onChangeComment = (e) => {
     this.setState({ writedComment: e.target.value })
   }
 
@@ -340,7 +320,7 @@ class PostDetail extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <div className={classes.root}>
+      <div>
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -388,14 +368,12 @@ class PostDetail extends React.Component {
               justify='space-between'>
               <Typography
                 display='inline'
-                align='left'
-                color='textSecondary'>
+                align='left'>
                 {this.state.post.writer_name}
               </Typography>
               <Typography
                 display='inline'
-                align='right'
-                color='textSecondary'>
+                align='right'>
                 {this.datetimeFormatting(this.state.post.created_time)}
               </Typography>
             </Grid>
@@ -462,7 +440,7 @@ class PostDetail extends React.Component {
                 // </ListItem>
               ))}
             </List>
-            {this.props.isLoggedIn === true ?
+            {this.props.isLogin === true ?
             <div>
               <TextField
                 className={classes.commenTextarea}

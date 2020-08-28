@@ -1,7 +1,6 @@
 import React from 'react'
 import {  withStyles, TextField, Button, CardActions, Backdrop, CircularProgress, Paper, InputLabel, Select } from '@material-ui/core'
 
-import '../post/post.css'
 import { withRouter } from 'react-router-dom'
 import Axios from 'axios'
 import { withSnackbar } from 'notistack'
@@ -35,17 +34,15 @@ const useStyles = theme => ({
   },
   editor: {
     borderWidth: "2px",
-    borderTopWidth: "0px",
-    borderColor: 'white',
+    borderColor: '#e0e0e0',
     borderStyle: 'solid',
-    // marginTop: theme.spacing(2),
+    borderTopWidth: "0px",
     padding: theme.spacing(2),
     minHeight: theme.spacing(50),
-    color: 'white'
   },
   toolbar: {
     borderWidth: "2px",
-    borderColor: 'white',
+    borderColor: '#e0e0e0',
     borderStyle: 'solid',
     padding: theme.spacing(2),
     marginTop: theme.spacing(2)
@@ -125,11 +122,6 @@ class Post extends React.Component {
 
   constructor(props) {
     super(props)
-    this.onClickSaveButton = this.onClickSaveButton.bind(this)
-    this.handleSnackbarClose = this.handleSnackbarClose.bind(this)
-    this.onChangeTitle = this.onChangeTitle.bind(this)
-    this.editorStateChanged = this.editorStateChanged.bind(this)
-
     this.state.editorState = EditorState.createEmpty(modifyDecorator)
   }
 
@@ -179,7 +171,7 @@ class Post extends React.Component {
     }
   }
 
-  sendData() {
+  sendData = () => {
     this.setState({nowLoading: true})
     const data = this.state.post
     data.content = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
@@ -238,17 +230,17 @@ class Post extends React.Component {
 
   }
 
-  onChangeTitle(e) {
+  onChangeTitle = (e) => {
     const post = this.state.post
     post.title = e.target.value
     this.setState({post})
   }
 
-  onClickSaveButton() {
+  onClickSaveButton = () => {
     this.sendData()
   }
 
-  handleSnackbarClose() {
+  handleSnackbarClose = () => {
     this.setState({open: false})
   }
 

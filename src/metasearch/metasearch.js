@@ -6,24 +6,19 @@ import Axios from 'axios';
 import { Pagination, PaginationItem } from '@material-ui/lab';
 
 const useStyles = theme => ({
-  mainPaper: {
-    marginTop: theme.spacing(2),
+  paper: {
     padding: theme.spacing(2)
   },
   divider: {
     margin: theme.spacing(1)
   },
-  gridItem: {
-    padding: theme.spacing(2)
-  },
-  imageDiv: {
-    // width: theme.spacing(40),
-    // height: theme.spacing(40)
+  itemsDiv: {
+    marginTop: theme.spacing(2)
   },
   pagination: {
     display: 'flex',
     justifyContent: 'center',
-    padding: theme.spacing(1)
+    paddingTop: theme.spacing(2)
   }
 });
 
@@ -99,67 +94,65 @@ class MetaSearch extends React.Component {
   render() {
     const {classes} = this.props
     return (
-      <div>
+      <Paper className={classes.paper}>
         <div className={classes.searchPannel}>
-          {/* <form onKeyPress={this.searchKeyInput}> */}
-            <TextField
-              id='search'
-              label='search'
-              onKeyPress={this.searchKeyInput}/>
-          {/* </form> */}
+          <TextField
+            id='search'
+            label='search'
+            onKeyPress={this.searchKeyInput}/>
         </div>
         검색 결과 수 : {this.state.count}
-        <Paper className={classes.mainPaper}>
-        <Grid
+        { this.state.items.length === 0 ? '' :
+        <div className={classes.itemsDiv}>
+          <div>
+            <Grid
                   container
                   ddirection='row'
                   justify='space-between'
-                  alignItems='center'>
-          {this.state.items.map((item) => (
-            <Grid item xs={12} sm={6} lg={3} key={item.name}>
-              <MLink
-                  // component={`div`}
-                  href={item.link}
-                  color='inherit'
-                  target='_blank'>
-              <div className={classes.gridItem}>
-                {/* <div>
-                  <img src={item.thumbnail} alt={item.name}/>
-                </div> */}
-                
-                  <div className={classes.imageDiv}>
-                    <img src={item.thumbnail} alt={item.name}/>
-                  </div>
+                  alignItems='center'
+                  spacing={2}>
+            {this.state.items.map((item) => (
+              <Grid item xs={12} sm={6} lg={3} key={item.name}>
+                <MLink
+                    href={item.link}
+                    color='inherit'
+                    target='_blank'>
                   <div>
-                    {item.store_name}
+                    <div>
+                      <img src={item.thumbnail} alt={item.name}/>
+                    </div>
+                    <div>
+                      {item.store_name}
+                    </div>
+                    <div>
+                      {item.name}
+                    </div>
+                    <br/>
+                    <div>
+                      <b>{`${item.price}원`}</b>
+                    </div>
                   </div>
-                  <div>
-                    {item.name}
-                  </div>
-                  <br/>
-                  <div>
-                    <b>{`${item.price}원`}</b>
-                  </div>
-                </div>
-              </MLink>
-            </Grid>
-          ))}
-          </Grid>       
-        </Paper>
-        <div className={classes.pagination}>
-          <Pagination
-            page={parseInt(this.state.pageNumber)}
-            count={Math.ceil(this.state.count / 20)}
-            shape={`rounded`}
-            renderItem={(item) => (
-              <PaginationItem
-                component={Link}
-                to={`/meta?keyword=${this.state.keyword}&page=${item.page}`}
-                {...item}
-              />
-            )}/>
+                </MLink>
+              </Grid>
+            ))}
+            </Grid>       
+          </div>
+          <div className={classes.pagination}>
+            <Pagination
+              page={parseInt(this.state.pageNumber)}
+              count={Math.ceil(this.state.count / 20)}
+              shape={`rounded`}
+              renderItem={(item) => (
+                <PaginationItem
+                  component={Link}
+                  to={`/meta?keyword=${this.state.keyword}&page=${item.page}`}
+                  {...item}
+                />
+              )}/>
+          </div>
         </div>
-      </div>
+        }
+      </Paper>
     )
   }
 }

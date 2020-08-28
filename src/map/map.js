@@ -12,13 +12,6 @@ import commonStoreMarkerIcon from '../img/marker-commonStore.png'
 import AddressField from './addressfield'
 
 const useStyles = theme => ({
-  divider: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3)
-  },
-  storePaper: {
-    padding: theme.spacing(3)
-  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
@@ -26,7 +19,7 @@ const useStyles = theme => ({
   map: {
     width: '100%',
     height: '400px',
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(2)
   },
   addressfield: {
     marginBottom: theme.spacing(2)
@@ -121,7 +114,6 @@ class NMap extends React.Component {
 
     new window.naver.maps.Event.addListener(this.state.map, 'zoom_changed', () => {
       this.getStores()
-      console.log(this.state.workshops.length)
       // this.updateMarkers(this.state.workshops)
       // this.updateMarkers(this.state.toolstores)
       // this.updateMarkers(this.state.leatherstores)
@@ -131,7 +123,6 @@ class NMap extends React.Component {
   
     new window.naver.maps.Event.addListener(this.state.map, 'dragend', () => {
       this.getStores()
-      console.log(this.state.workshops.length)
       // this.updateMarkers(this.state.workshops)
       // this.updateMarkers(this.state.toolstores)
       // this.updateMarkers(this.state.leatherstores)
@@ -144,15 +135,6 @@ class NMap extends React.Component {
     });
 
     this.getStores()
-
-    // window.naver.maps.Service.geocode({address: '조마루로 135'}, (status, response) => {
-    //   if (status === window.naver.maps.Service.Status.ERROR) {
-    //     return console.log('ERROR')
-    //   }
-
-    //   console.log(response)
-    // })
-    // this.setState({map: this.mapRef.instance})
   }
 
   initMarker = (store, icon, isShow, shopList) => {
@@ -276,7 +258,6 @@ class NMap extends React.Component {
       this.showMarkers(stores)
     }
     this.setState({[key]: !isShow})
-    // console.log({key: !isShow})
   }
 
   render() {
