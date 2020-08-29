@@ -10,12 +10,13 @@ import Layout from './layout/layout';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import userReducer from './redux/reducers/user';
-import { lime } from '@material-ui/core/colors';
+import { blueGrey } from '@material-ui/core/colors';
 
 
 const theme = createMuiTheme({
   palette: {
-    primary: lime
+    primary: blueGrey,
+    type: `dark`
   }
 })
 
