@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextField, Grid, withStyles, List, ListItem, ListItemText } from '@material-ui/core'
+import { TextField, withStyles, List, ListItem, ListItemText, InputAdornment } from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search';
 import Axios from 'axios'
 
@@ -53,17 +53,19 @@ class AddressField extends React.Component {
     const {classes} = this.props
     return (
       <div>
-        <Grid container spacing={1} alignItems="flex-end">
-          <Grid item>
-            <SearchIcon />
-          </Grid>
-          <Grid item>
-            <TextField
-              label='주소검색'
-              onKeyPress={this.keyPress}
-              onChange={(e) => this.setState({keyword: e.target.value})}/>
-          </Grid>
-        </Grid>
+        <div>
+          <TextField
+            label='주소검색'
+            onKeyPress={this.keyPress}
+            onChange={(e) => this.setState({keyword: e.target.value})}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position='start'>
+                  <SearchIcon />
+                </InputAdornment>
+              )
+            }}/>
+        </div>
         <div
           className={classes.results}>
           <List>
