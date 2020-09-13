@@ -7,6 +7,8 @@ import { withSnackbar } from 'notistack';
 
 import bcrypt from 'bcryptjs'
 import env from '../salt'
+import { setUser } from '../redux/actions';
+import { connect } from 'react-redux';
 
 const useStyles = theme => ({
   logindiv: {
@@ -25,20 +27,14 @@ const useStyles = theme => ({
 
 class UserInfo extends React.Component {
   state = {
-    user: {},
+    user: this.props.user,
     salt: env.salt,
-  }
-
-  constructor(props) {
-    super(props)
-    this.state.user = JSON.parse(localStorage.getItem('user'))
   }
 
   passwordOnChange = (e) => {
     const user = this.state.user
 
-    const hash = bcrypt.hashSync(e.target.value, this.state.salt)
-    user.password = hash
+    user.password = e.target.value
     this.setState({user})
   }
 
@@ -51,11 +47,13 @@ class UserInfo extends React.Component {
   onClickModifyButton = () => {
     const config = {
       headers: {
-        Authorization: `token ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem('token')}`
       }
     }
     
     const user = this.state.user
+    const hash = bcrypt.hashSync(user.password, this.state.salt)
+    user.password = hash
 
     Axios.put(
       `${process.env.REACT_APP_SERVERURL}/api/users/${this.state.user.username}/`,
@@ -63,8 +61,7 @@ class UserInfo extends React.Component {
       config
       ).then((response) => {
         this.props.enqueueSnackbar('정상적으로 수정 되었습니다.', {variant: 'success'})
-        localStorage.setItem('user', JSON.stringify(user))
-        this.props.setUserData(user)
+        this.props.setUser(response.data)
         this.props.history.replace(`/`)
     })
   }
@@ -74,7 +71,7 @@ class UserInfo extends React.Component {
     
     return (
       <div>
-        <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
+        <Backdrop className={classes.backdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
         <Paper className={classes.logindiv}>
@@ -87,7 +84,7 @@ class UserInfo extends React.Component {
               id='id'
               label='ID'
               disabled
-              defaultValue={this.state.user.username}/>
+              defaultValue={this.props.user.username}/>
             <TextField required
               fullWidth={true}
               id='password'
@@ -98,41 +95,17 @@ class UserInfo extends React.Component {
               fullWidth={true}
               id='name'
               label='닉네임'
-              defaultValue={this.state.user.name}
+              defaultValue={this.props.user.name}
               onChange={this.nicknameOnChange}/>
             <Button
                 className={classes.leftButton}
                 fullWidth={true}
                 variant="contained" 
-                color="secondary"
+                color="primary"
                 onClick={this.onClickModifyButton}
                 >
-                수정
-              </Button>
-            {/* <TextField required
-              fullWidth={true}
-              id='password'
-              label='PASSWORD'
-              type='password'
-              onChange={this.passwordOnChange}
-              onKeyPress={this.inputPasswordKeyPress}/>
-              <Button
-                className={classes.leftButton}
-                fullWidth={true}
-                variant="contained" 
-                color="secondary"
-                onClick={this.onPushLoginButton}
-                >
-                로그인
-              </Button>
-              <Button
-                component={Link}
-                to={`/users/register/`}
-                fullWidth={true}
-                variant="contained" 
-                color="primary">
-                회원가입
-              </Button> */}
+              수정
+            </Button>
           </form>
         </Paper>
       </div>
@@ -140,4 +113,14 @@ class UserInfo extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(UserInfo)));
+const mapDispatchToProps = dispatch => ({
+  setUser: user => dispatch(setUser(user))
+})
+
+const mapStateToProps = (state, ownProps) => ({
+  isLogin: state.isLogin,
+  user: state.user,
+  ownProps
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(UserInfo))))

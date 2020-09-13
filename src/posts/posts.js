@@ -1,26 +1,33 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Fab, Grid, Divider, TextField } from '@material-ui/core';
+import { withStyles, List, ListItem, ListItemText, Typography, Backdrop, CircularProgress, Fab, Grid, Divider, TextField, Paper, Hidden } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
+
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import PersonIcon from '@material-ui/icons/Person';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import CategoryIcon from '@material-ui/icons/Category';
 
 import { Pagination, PaginationItem } from '@material-ui/lab'
 
 import { Link, withRouter } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
+import { connect } from 'react-redux';
+import { logout } from '../redux/actions';
 
 
 const useStyles = theme => ({
   root: {
     // width: '100%',
     backgroundColor: theme.palette.background.paper,
-    margin: '0 auto',
-    [theme.breakpoints.up('lg')]: {
-      width: "70%"
-    },
-    [theme.breakpoints.up('md')]: {
-      width: "80%"
-    }
+    // margin: '0 auto',
+    // [theme.breakpoints.up('lg')]: {
+    //   width: "70%"
+    // },
+    // [theme.breakpoints.up('md')]: {
+    //   width: "80%"
+    // }
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -40,8 +47,9 @@ const useStyles = theme => ({
     position: 'fixed',
   },
   searchPannel: {
+    textAlign: `center`,
     marginRight: theme.spacing(2),
-    textAlign: 'right'
+    // textAlign: 'right'
   },
   searchForm: {
     width: theme.spacing(100)
@@ -57,6 +65,43 @@ const useStyles = theme => ({
   },
   notice: {
     color: 'Thistle'
+  },
+  row: {
+    padding: theme.spacing(1)
+  },
+  postsTable: {
+    width: `100%`,
+    padding: theme.spacing(2)
+  },
+  itemCenter: {
+    textAlign: `center`,
+    paddingTop: theme.spacing(1),
+  },
+  timeCell: {
+    textAlign: `center`,
+    width: `1px`,
+    whiteSpace: `nowrap`,
+    paddingRight: theme.spacing(2),
+  },
+  categoryCell: {
+    textAlign: `center`,
+    width: `1px`,
+    whiteSpace: `nowrap`,
+    paddingRight: theme.spacing(2),
+  },
+  writerCell: {
+    textAlign: `center`,
+    width: `1px`,
+    whiteSpace: `nowrap`,
+    paddingRight: theme.spacing(2),
+  },
+  viewcountCell: {
+    textAlign: `center`,
+    width: `1px`,
+    whiteSpace: `nowrap`,
+  },
+  titleText: {
+    textDecoration: `none`
   }
 });
 
@@ -99,6 +144,7 @@ class Posts extends React.Component {
     }
 
     this.state.params = data
+    this.setState({pageNumber: pageNumber})
     return data
   }
 
@@ -149,7 +195,6 @@ class Posts extends React.Component {
 
   componentDidMount() {
     this.getAllDataFromParameter()
-    console.log(this.getDataFromParameter('search'))
     if(this.getDataFromParameter('search') === null) {
       this.getNotices()
     } else {
@@ -179,87 +224,155 @@ class Posts extends React.Component {
     }
   }
 
+  setCategorySpan = (category) => {
+    const {classes} = this.props
+    switch(category){
+      case 1:
+        return <span>{`일반`}</span>
+      case 2:
+        return <span className={classes.tip}>{`팁/강좌`}</span>
+      case 3:
+        return <span className={classes.question}>{`질문`}</span>
+      case 4:
+        return <span className={classes.review}>{`사용기/리뷰`}</span>
+      default:
+        return
+    }
+  }
+
   render () {
     const { classes } = this.props;
     return(
-      <div className={classes.root}>
+      <Paper>
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
-        </Backdrop>   
-        <List>
-        {this.state.notices.map((row) => (
-          <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-            <ListItemText 
-              primary={
-                <Grid
+        </Backdrop>
+        <Hidden mdUp implementation="css">
+          {/* 작은화면 */}
+          <List>
+          {this.state.notices.map((row) => (
+            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+              <ListItemText 
+                primary={
+                  <Grid
+                      container
+                      justify='space-between'>
+                    <Typography color="textPrimary">
+                      {row.title}[{row.comment_count}]
+                    </Typography>
+                    <Typography
+                      color="textPrimary">
+                      {row.writer_name}
+                    </Typography>
+                  </Grid>
+                }
+                secondary={
+                  <Grid
+                    className={classes.subtitle}
                     container
                     justify='space-between'>
-                  <Typography color="textPrimary">
-                    {row.title}[{row.comment_count}]
-                  </Typography>
-                  <Typography
-                    color="textPrimary">
-                    {row.writer_name}
-                  </Typography>
-                </Grid>
-              }
-              secondary={
-                <Grid
-                  className={classes.subtitle}
-                  container
-                  justify='space-between'>
-                  <span className={classes.notice}>{`공지`}</span>
-                  <span>{this.dateTimeFormatting(row.created_time)}</span>
-                </Grid>
-              }
-              secondaryTypographyProps={
-                {component:'div'}
-              }/>
-          </ListItem>
-        ))}
-        {this.state.posts.map((row) => (
-          <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
-            <ListItemText 
-              primary={
-                <Grid
+                    <span className={classes.notice}>{`공지`}</span>
+                    <span>{this.dateTimeFormatting(row.created_time)}</span>
+                  </Grid>
+                }
+                secondaryTypographyProps={
+                  {component:'div'}
+                }/>
+            </ListItem>
+          ))}
+          {this.state.posts.map((row) => (
+            <ListItem component={Link} to={`/posts/${row.pk}`} key={row.pk}>
+              <ListItemText 
+                primary={
+                  <Grid
+                      container
+                      justify='space-between'>
+                    <Typography color="textPrimary">
+                      {row.title}[{row.comment_count}]
+                    </Typography>
+                    <Typography
+                      color="textPrimary">
+                      {row.writer_name}
+                    </Typography>
+                  </Grid>
+                }
+                secondary={
+                  <Grid
+                    className={classes.subtitle}
                     container
                     justify='space-between'>
-                  <Typography color="textPrimary">
-                    {row.title}[{row.comment_count}]
-                  </Typography>
-                  <Typography
-                    color="textPrimary">
-                    {row.writer_name}
-                  </Typography>
-                </Grid>
-              }
-              secondary={
-                <Grid
-                  className={classes.subtitle}
-                  container
-                  justify='space-between'>
-                  {row.category === 1 &&
-                  <span>{`일반`}</span>
-                  }
-                  {row.category === 2 &&
-                  <span className={classes.tip}>{`팁/강좌`}</span>
-                  }
-                  {row.category === 3 &&
-                  <span className={classes.question}>{`질문`}</span>
-                  }
-                  {row.category === 4 &&
-                  <span className={classes.review}>{`사용기/리뷰`}</span>
-                  }
-                  
-                  <span>{this.dateTimeFormatting(row.created_time)}</span>
-                </Grid>
-              }
-              secondaryTypographyProps={
-                {component:'div'}
-              }/>
-          </ListItem>
-        ))}
-        </List>
+                    {row.category === 1 &&
+                    <span>{`일반`}</span>
+                    }
+                    {row.category === 2 &&
+                    <span className={classes.tip}>{`팁/강좌`}</span>
+                    }
+                    {row.category === 3 &&
+                    <span className={classes.question}>{`질문`}</span>
+                    }
+                    {row.category === 4 &&
+                    <span className={classes.review}>{`사용기/리뷰`}</span>
+                    }
+                    
+                    <span>{this.dateTimeFormatting(row.created_time)}</span>
+                  </Grid>
+                }
+                secondaryTypographyProps={
+                  {component:'div'}
+                }/>
+            </ListItem>
+          ))}
+          </List>
+        </Hidden>
+        <Hidden smDown implementation="css">
+          <table className={classes.postsTable}>
+            <thead>
+              <tr>
+                <th className={classes.timeCell}><AccessTimeIcon/></th>
+                <th className={classes.categoryCell}><CategoryIcon/></th>
+                <th></th>
+                <th className={classes.writerCell}><PersonIcon/></th>
+                <th className={classes.viewcountCell}><VisibilityIcon/></th>
+              </tr>
+            </thead>
+            <tbody>
+            {this.state.notices.map((row) => (
+              <tr className={classes.row} key={row.pk} component={Link} to={`/posts/${row.pk}`}>
+                <td className={classes.timeCell}>{this.dateTimeFormatting(row.created_time)}</td>
+                <td className={classes.categoryCell}><span className={classes.notice}>공지</span></td>
+                <td>
+                  <Link to={`/posts/${row.pk}`} className={classes.titleText}>
+                    <Typography
+                      color="textPrimary">
+                      {row.title} [{row.comment_count}]
+                    </Typography>
+                  </Link>
+                </td>
+                <td className={classes.writerCell}>{row.writer_name}</td>
+                <td className={classes.viewcountCell}>{row.views}</td>
+              </tr>
+            ))}
+            </tbody>
+            <tbody>
+            {this.state.posts.map((row) => (
+              <tr className={classes.row} key={row.pk}>
+                <td className={classes.timeCell}>{this.dateTimeFormatting(row.created_time)}</td>
+                <td className={classes.categoryCell}>{this.setCategorySpan(row.category)}</td>
+                <td>
+                  <Link to={`/posts/${row.pk}`} className={classes.titleText}>
+                    <Typography
+                      color="textPrimary">
+                      {row.title} [{row.comment_count}]
+                    </Typography>
+                  </Link>
+                </td>
+                <td className={classes.writerCell}>{row.writer_name}</td>
+                <td className={classes.viewcountCell}>{row.views}</td>
+            </tr>
+            ))}
+            </tbody>
+          </table>
+        </Hidden>
         <Divider/>
         <div className={classes.searchPannel}>
           {/* <form onKeyPress={this.searchKeyInput}> */}
@@ -272,7 +385,7 @@ class Posts extends React.Component {
         <div className={classes.pagination}>
           <Pagination
             page={parseInt(this.state.pageNumber)}
-            count={this.state.navigationCount}
+            count={Math.ceil(this.state.count / 20)}
             shape={`rounded`}
             renderItem={(item) => (
               <PaginationItem
@@ -283,10 +396,10 @@ class Posts extends React.Component {
             )}/>
         </div>
         {
-          this.props.isLoggedIn === true ?
+          this.props.isLogin === true ?
           <Fab 
             className={classes.floatingButton}
-            color="secondary"
+            color="primary"
             aria-label="edit"
             component={Link}
             to={`/post/`}>
@@ -294,9 +407,14 @@ class Posts extends React.Component {
           </Fab> :
           ''
         }
-      </div>
+      </Paper>
     )
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(Posts)));
+const mapStateToProps = (state, ownProps) => ({
+  isLogin: state.isLogin,
+  ownProps
+})
+
+export default connect(mapStateToProps)(withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(Posts))));

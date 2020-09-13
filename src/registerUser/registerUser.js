@@ -97,6 +97,7 @@ class RegisterUser extends React.Component {
       `${process.env.REACT_APP_SERVERURL}/api/users/`,
       user
       ).then((response) => {
+        this.props.enqueueSnackbar(`정상적으로 가입되었습니다`, {variant: 'success'})
         this.setState({nowLoading: false})
         this.props.history.replace('/login/')
       }).catch((error) => {

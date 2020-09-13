@@ -10,12 +10,12 @@ import NMap from './map'
 import naverIcon from '../img/img_naver_share_07.png'
 
 const useStyles = theme => ({
-  divider: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3)
+  paper: {
+    padding: theme.spacing(2)
   },
-  storePaper: {
-    padding: theme.spacing(3)
+  divider: {
+    marginTop: theme.spacing(2),
+    // marginBottom: theme.spacing(3)
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -42,7 +42,7 @@ class LNaverMap extends React.Component {
   render() {
     const {classes} = this.props
     return (
-      <div>
+      <Paper className={classes.paper}>
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -58,53 +58,55 @@ class LNaverMap extends React.Component {
         </div>
         <Divider className={classes.divider}/>
         <div>
-          <Paper className={classes.storePaper}>
-              <span>
-                {this.state.currentStore.name}
-              </span>
-              { this.state.currentStore.homepage != null ?
-              <IconButton
-                  component='a'
-                  href={this.state.currentStore.homepage}
-                  target="_blank">
-                <HomeIcon/>
-              </IconButton>
-                :
-              ''
-              }
-              { this.state.currentStore.instagram != null ?
-              <IconButton
-                  component='a'
-                  href={this.state.currentStore.instagram}
-                  target="_blank">
-                <InstagramIcon/>
-              </IconButton>
-                :
-              ''
-              }
-              { this.state.currentStore.blog != null ?
-              <IconButton
-                  component='a'
-                  href={this.state.currentStore.blog}
-                  target="_blank">
-                <img
-                  alt={`NaverBlog`}
-                  src={naverIcon}
-                  width='24'
-                  height='24'/>
-              </IconButton>
-                :
-              ''
-              }
-              <br/>
-              { this.state.currentStore.address != null ?
-              this.state.currentStore.address
-                :
-              ''
-              }
-          </Paper>
+          {Object.keys(this.state.currentStore).length === 0 ? '' :
+          <div>
+            <span>
+              {this.state.currentStore.name}
+            </span>
+            { this.state.currentStore.homepage != null ?
+            <IconButton
+                component='a'
+                href={this.state.currentStore.homepage}
+                target="_blank">
+              <HomeIcon/>
+            </IconButton>
+              :
+            ''
+            }
+            { this.state.currentStore.instagram != null ?
+            <IconButton
+                component='a'
+                href={this.state.currentStore.instagram}
+                target="_blank">
+              <InstagramIcon/>
+            </IconButton>
+              :
+            ''
+            }
+            { this.state.currentStore.blog != null ?
+            <IconButton
+                component='a'
+                href={this.state.currentStore.blog}
+                target="_blank">
+              <img
+                alt={`NaverBlog`}
+                src={naverIcon}
+                width='24'
+                height='24'/>
+            </IconButton>
+              :
+            ''
+            }
+            <br/>
+            { this.state.currentStore.address != null ?
+            this.state.currentStore.address
+              :
+            ''
+            }
+          </div>
+          }
         </div>
-      </div>
+      </Paper>
     )
   }
 }

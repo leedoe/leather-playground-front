@@ -1,7 +1,6 @@
 import React from 'react'
 import {  withStyles, TextField, Button, CardActions, Backdrop, CircularProgress, Paper, InputLabel, Select } from '@material-ui/core'
 
-import '../post/post.css'
 import { withRouter } from 'react-router-dom'
 import Axios from 'axios'
 import { withSnackbar } from 'notistack'
@@ -10,6 +9,8 @@ import { EditorState, Editor, convertToRaw, CompositeDecorator, Entity, AtomicBl
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 
 import 'draft-js/dist/Draft.css';
+import { connect } from 'react-redux'
+import { logout } from '../redux/actions'
 
 const useStyles = theme => ({
   confirmButton: {
@@ -33,17 +34,15 @@ const useStyles = theme => ({
   },
   editor: {
     borderWidth: "2px",
-    borderTopWidth: "0px",
-    borderColor: 'white',
+    borderColor: '#e0e0e0',
     borderStyle: 'solid',
-    // marginTop: theme.spacing(2),
+    borderTopWidth: "0px",
     padding: theme.spacing(2),
     minHeight: theme.spacing(50),
-    color: 'white'
   },
   toolbar: {
     borderWidth: "2px",
-    borderColor: 'white',
+    borderColor: '#e0e0e0',
     borderStyle: 'solid',
     padding: theme.spacing(2),
     marginTop: theme.spacing(2)
@@ -123,11 +122,6 @@ class Post extends React.Component {
 
   constructor(props) {
     super(props)
-    this.onClickSaveButton = this.onClickSaveButton.bind(this)
-    this.handleSnackbarClose = this.handleSnackbarClose.bind(this)
-    this.onChangeTitle = this.onChangeTitle.bind(this)
-    this.editorStateChanged = this.editorStateChanged.bind(this)
-
     this.state.editorState = EditorState.createEmpty(modifyDecorator)
   }
 
@@ -177,14 +171,14 @@ class Post extends React.Component {
     }
   }
 
-  sendData() {
+  sendData = () => {
     this.setState({nowLoading: true})
     const data = this.state.post
     data.content = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()))
 
     const config = {
       headers: {
-        Authorization: `token ${localStorage.getItem('token')}`
+        Authorization: `JWT ${localStorage.getItem('token')}`
       }
     }
     
@@ -211,23 +205,42 @@ class Post extends React.Component {
           this.props.enqueueSnackbar('글이 정상적으로 등록되었습니다.', {variant: 'success'})
           this.props.history.replace(`/posts/${response.data.pk}`)
         }).catch((e) => {
+          if(e.response.status === 401) {
+            Axios.post(
+              `${process.env.REACT_APP_SERVERURL}/api-token-refresh/`,
+              {refresh: localStorage.getItem('refresh')}
+            ).then(response => {
+              localStorage.setItem('token', response.data.access)
+              localStorage.setItem('refresh', response.data.refresh)
+              this.sendData()
+            }).catch(e => {
+              this.props.enqueueSnackbar('다시 로그인해주세요.', {variant: 'error'})
+              this.props.logout()
+              this.props.history.replace(`/login/`)
+            })
+          } else {
+            this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
+          }
           this.setState({nowLoading: false})
-          this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
         })
     }
   }
 
-  onChangeTitle(e) {
+  refreshToken = () => {
+
+  }
+
+  onChangeTitle = (e) => {
     const post = this.state.post
     post.title = e.target.value
     this.setState({post})
   }
 
-  onClickSaveButton() {
+  onClickSaveButton = () => {
     this.sendData()
   }
 
-  handleSnackbarClose() {
+  handleSnackbarClose = () => {
     this.setState({open: false})
   }
 
@@ -355,4 +368,15 @@ class Post extends React.Component {
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(Post)));
+const mapStateToProps = (state, ownProps) => ({
+  isLogin: state.isLogin,
+  user: state.user,
+  ownProps
+})
+
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
+})
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles, { withTheme: true })(withSnackbar(withRouter(Post))))
