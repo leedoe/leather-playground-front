@@ -14,6 +14,9 @@ import { blueGrey } from '@material-ui/core/colors';
 
 
 const theme = createMuiTheme({
+  // typography: {
+  //   fontFamily: 'Noto Sans KR'
+  // },
   palette: {
     primary: blueGrey,
     type: `dark`

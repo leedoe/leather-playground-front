@@ -105,7 +105,7 @@ const useStyles = theme => ({
   }
 });
 
-class Posts extends React.Component {
+class SuggestionBoard extends React.Component {
   state = {
     nowLoading: false,
     count: 0,
@@ -160,13 +160,6 @@ class Posts extends React.Component {
     }
   }
 
-  getNotices = () => {
-    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/?noticed=true`).then((response) => {
-      const notices = response.data.results;
-      this.setState({notices})
-    })
-  }
-
   fetchPostsFromServer = () => {
     this.setState({nowLoading: true})
     let parameters = `?`
@@ -174,7 +167,7 @@ class Posts extends React.Component {
       parameters += `${key}=${value}&`
     }
 
-    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${parameters}noticed=false&category__name!=건의`).then((response) => {
+    axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${parameters}noticed=false&category__name=건의`).then((response) => {
       const posts = response.data.results;
       
       const naviCount = response.data.count % 30;
@@ -196,7 +189,7 @@ class Posts extends React.Component {
   componentDidMount() {
     this.getAllDataFromParameter()
     if(this.getDataFromParameter('search') === null) {
-      this.getNotices()
+      // this.getNotices()
     } else {
       this.setState({notices: []})
     }
@@ -301,19 +294,6 @@ class Posts extends React.Component {
                     className={classes.subtitle}
                     container
                     justify='space-between'>
-                    {row.category === 1 &&
-                    <span>{`일반`}</span>
-                    }
-                    {row.category === 2 &&
-                    <span className={classes.tip}>{`팁/강좌`}</span>
-                    }
-                    {row.category === 3 &&
-                    <span className={classes.question}>{`질문`}</span>
-                    }
-                    {row.category === 4 &&
-                    <span className={classes.review}>{`사용기/리뷰`}</span>
-                    }
-                    
                     <span>{this.dateTimeFormatting(row.created_time)}</span>
                   </Grid>
                 }
@@ -329,35 +309,15 @@ class Posts extends React.Component {
             <thead>
               <tr>
                 <th className={classes.timeCell}><AccessTimeIcon/></th>
-                <th className={classes.categoryCell}><CategoryIcon/></th>
                 <th></th>
                 <th className={classes.writerCell}><PersonIcon/></th>
                 <th className={classes.viewcountCell}><VisibilityIcon/></th>
               </tr>
             </thead>
             <tbody>
-            {this.state.notices.map((row) => (
-              <tr className={classes.row} key={row.pk} component={Link} to={`/posts/${row.pk}`}>
-                <td className={classes.timeCell}>{this.dateTimeFormatting(row.created_time)}</td>
-                <td className={classes.categoryCell}><span className={classes.notice}>공지</span></td>
-                <td>
-                  <Link to={`/posts/${row.pk}`} className={classes.titleText}>
-                    <Typography
-                      color="textPrimary">
-                      {row.title} [{row.comment_count}]
-                    </Typography>
-                  </Link>
-                </td>
-                <td className={classes.writerCell}>{row.writer_name}</td>
-                <td className={classes.viewcountCell}>{row.views}</td>
-              </tr>
-            ))}
-            </tbody>
-            <tbody>
             {this.state.posts.map((row) => (
               <tr className={classes.row} key={row.pk}>
                 <td className={classes.timeCell}>{this.dateTimeFormatting(row.created_time)}</td>
-                <td className={classes.categoryCell}>{this.setCategorySpan(row.category)}</td>
                 <td>
                   <Link to={`/posts/${row.pk}`} className={classes.titleText}>
                     <Typography
@@ -401,7 +361,7 @@ class Posts extends React.Component {
           color="primary"
           aria-label="edit"
           component={Link}
-          to={`/post/`}>
+          to={{pathname: `/post/`, type: `suggestion`}}>
           <EditIcon/>
         </Fab>
       </div>
@@ -414,4 +374,4 @@ const mapStateToProps = (state, ownProps) => ({
   ownProps
 })
 
-export default connect(mapStateToProps)(withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(Posts))));
+export default connect(mapStateToProps)(withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(SuggestionBoard))));

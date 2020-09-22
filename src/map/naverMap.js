@@ -42,7 +42,7 @@ class LNaverMap extends React.Component {
   render() {
     const {classes} = this.props
     return (
-      <Paper className={classes.paper}>
+      <div className={classes.paper}>
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
@@ -106,7 +106,7 @@ class LNaverMap extends React.Component {
           </div>
           }
         </div>
-      </Paper>
+      </div>
     )
   }
 }

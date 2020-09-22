@@ -6,8 +6,12 @@ import moment from 'moment';
 import { withRouter, Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 import { CompositeDecorator, EditorState, Editor, convertFromRaw } from 'draft-js';
-import Instagram from '../instaform/insta';
+import Instagram from '../component/texteditor/insta';
 import { connect } from 'react-redux';
+import { logout } from '../redux/actions'
+
+import bcrypt from 'bcryptjs'
+import env from '../salt'
 
 const useStyles = theme => ({
   backdrop: {
@@ -120,7 +124,10 @@ class PostDetail extends React.Component {
     comments: [],
     nowLoading: true,
     anchorEl: null,
-    writedComment: ''
+    writedComment: '',
+    isShowMenu: false,
+    writedCommentName: '',
+    writedCommentPassword: '',
   }
 
   constructor(props) {
@@ -159,14 +166,23 @@ class PostDetail extends React.Component {
 
     Axios.get(`${process.env.REACT_APP_SERVERURL}/api/posts/${this.props.match.params.pk}`).then((response) => {
       const post = response.data;
+      let isShowMenu = false
+
+      if(post.writer === null) {
+        isShowMenu = true
+      } else if (post.writer === this.props.user.pk) {
+        isShowMenu = true
+      }
 
       // this.state.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator)
       this.setState({
-        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)), compositeDecorator),
+        editorState: EditorState.createWithContent(convertFromRaw(post.content), compositeDecorator),
         post,
         nowLoading: false,
+        isShowMenu
       })
     }).catch((e) => {
+      this.props.enqueueSnackbar('서버와 통신이 원활하지 않습니다.', {variant: 'error'})
     });
   }
 
@@ -177,17 +193,28 @@ class PostDetail extends React.Component {
       const comments = response.data;
 
       this.setState({ comments })
-      this.setState({ nowLoading: false })
     }).catch((e) => {
+      this.props.enqueueSnackbar('서버와 통신이 원활하지 않습니다.', {variant: 'error'})
     });
+    this.setState({ nowLoading: false })
   }
 
   onClickDeleteButton = () => {
-    this.setState({ nowLoading: true })
-    this.setState({ anchorEl: null });
     const post = this.state.post
     post.deleted = true
-
+    console.log(this.state.post)
+    if(this.state.post.writer === null) {
+      // 익명으로 쓴 글
+      console.log(`test`)
+      this.props.history.push({
+        pathname: `/posts/${post.pk}/pwcheck/`,
+        state: {post}
+      })
+      return
+    }
+    
+    this.setState({ nowLoading: true })
+    this.setState({ anchorEl: null });
     const config = {
       headers: {
         Authorization: `JWT ${localStorage.getItem('token')}`
@@ -201,42 +228,101 @@ class PostDetail extends React.Component {
     ).then((response) => {
       this.setState({ nowLoading: false })
       this.props.enqueueSnackbar('정삭적으로 삭제되었습니다.', { variant: 'success' })
-      this.props.history.replace('/posts')
+      this.props.history.go(-1)
     }).catch((e) => {
-      this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', { variant: 'error' })
-      this.setState({ nowLoading: false })
+      if(e.response.data.code === 'token_not_valid') {
+        Axios.post(
+          `${process.env.REACT_APP_SERVERURL}/api-token-refresh/`,
+          {refresh: localStorage.getItem('refresh')}
+        ).then(response => {
+          localStorage.setItem('token', response.data.access)
+          localStorage.setItem('refresh', response.data.refresh)
+          this.onClickDeleteButton()
+        }).catch(e => {
+          this.props.enqueueSnackbar('로그인 정보가 만료되었습니다. 다시 로그인해주세요.', {variant: 'error'})
+          this.props.logout()
+          this.props.history.replace(`/login/`)
+        })
+      }
+      // this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', { variant: 'error' })
     })
+    this.setState({ nowLoading: false })
   }
 
   onClickConfirmButton = () => {
-    this.setState({ nowLoading: true })
+    // this.setState({ nowLoading: true })
 
     const data = {
       post: this.state.post.pk,
       content: this.state.writedComment,
-      writer_name: this.props.user.name,
-      writer: this.props.user.pk
     }
 
-    const config = {
-      headers: {
-        Authorization: `JWT ${localStorage.getItem('token')}`
+    if(this.props.isLogin) {
+      data.writer_name = this.props.user.name
+      data.writer = this.props.user.pk
+    } else {
+      data.writer_name = this.state.writedCommentName
+      const hash = bcrypt.hashSync(this.state.writedCommentPassword, this.state.salt)
+      data.password = hash
+    }
+
+    const t_config = {
+      url: `${process.env.REACT_APP_SERVERURL}/api/comments/`,
+      data, 
+      method: 'post'}
+    if (this.props.isLogin) {
+      t_config.headers = {Authorization: `JWT ${localStorage.getItem('token')}`}
+    }
+    
+    console.log(t_config)
+
+    Axios.request(t_config).then(response => {
+      console.log(response)
+      if(response.status === 201) {
+        this.props.enqueueSnackbar('정상적으로 등록되었습니다.', {variant: 'success'})
+      } else if(response.status === 200) {
+        this.props.enqueueSnackbar('정상적으로 수정되었습니다.', {variant: 'success'})
       }
-    }
-
-    Axios.post(
-      `${process.env.REACT_APP_SERVERURL}/api/comments/`,
-      data,
-      config
-    ).then((response) => {
-      this.setState({ nowLoading: false })
-      this.props.enqueueSnackbar('정삭적으로 등록되었습니다.', { variant: 'success' })
-      // this.props.history.replace(`/posts/${this.props.match.params.pk}`)
+      this.setState({
+        writedCommentName: '',
+        writedCommentPassword: '',
+      })
       this.fetchCommentFromServer()
-    }).catch((e) => {
-      this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', { variant: 'error' })
-      this.setState({ nowLoading: false })
+    }).catch(e => {
+      // console.log(e)
+      if(e.response.data.code === 'token_not_valid') {
+        Axios.post(
+          `${process.env.REACT_APP_SERVERURL}/api-token-refresh/`,
+          {refresh: localStorage.getItem('refresh')}
+        ).then(response => {
+          localStorage.setItem('token', response.data.access)
+          localStorage.setItem('refresh', response.data.refresh)
+          this.sendData()
+        }).catch(e => {
+          this.props.enqueueSnackbar('로그인 정보가 만료되었습니다. 다시 로그인해주세요.', {variant: 'error'})
+          this.props.logout()
+          this.props.history.replace(`/login/`)
+        })
+      } else if(e.response.status === 401) {
+        this.props.enqueueSnackbar('비밀번호를 확인해주세요.', {variant: 'error'})
+      }else {
+        this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
+      }
     })
+
+    // Axios.post(
+    //   `${process.env.REACT_APP_SERVERURL}/api/comments/`,
+    //   data,
+    //   config
+    // ).then((response) => {
+    //   this.setState({ nowLoading: false })
+    //   this.props.enqueueSnackbar('정삭적으로 등록되었습니다.', { variant: 'success' })
+    //   // this.props.history.replace(`/posts/${this.props.match.params.pk}`)
+    //   this.fetchCommentFromServer()
+    // }).catch((e) => {
+    //   this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', { variant: 'error' })
+    //   this.setState({ nowLoading: false })
+    // })
   }
 
   deleteComment = (inputComment) => {
@@ -260,7 +346,23 @@ class PostDetail extends React.Component {
       // this.props.history.replace(`/posts/${this.props.match.params.pk}`)
       this.fetchCommentFromServer()
     }).catch((e) => {
-      this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', { variant: 'error' })
+      if(e.response.data.code === 'token_not_valid') {
+        Axios.post(
+          `${process.env.REACT_APP_SERVERURL}/api-token-refresh/`,
+          {refresh: localStorage.getItem('refresh')}
+        ).then(response => {
+          localStorage.setItem('token', response.data.access)
+          localStorage.setItem('refresh', response.data.refresh)
+          this.sendData()
+        }).catch(e => {
+          this.props.enqueueSnackbar('로그인 정보가 만료되었습니다. 다시 로그인해주세요.', {variant: 'error'})
+          this.props.logout()
+          this.props.history.replace(`/login/`)
+        })
+      } else {
+        this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', {variant: 'error'})
+      }
+      // this.props.enqueueSnackbar('서버와 연결이 정상적이지 않습니다.', { variant: 'error' })
       this.setState({ nowLoading: false })
     })
   }
@@ -325,7 +427,7 @@ class PostDetail extends React.Component {
           <CircularProgress color="inherit" />
         </Backdrop>
         {this.state.nowLoading === false ?
-          <Paper className={classes.card}>
+          <div className={classes.card}>
             <div>
               <Grid
                 className={classes.subtitle}
@@ -337,7 +439,7 @@ class PostDetail extends React.Component {
                   {this.state.post.title}
                 </Typography>
                 {
-                  this.props.user.pk === this.state.post.writer ?
+                  this.state.isShowMenu ?
                     <div className={classes.iconDiv}>
                       <IconButton
                         aria-controls="simple-menu"
@@ -419,7 +521,7 @@ class PostDetail extends React.Component {
                           className={classes.deleteButton}
                           onClick={() => this.deleteComment(comment)}>
                           삭제
-                    </Button>
+                        </Button>
                         :
                         ''
                       }
@@ -440,8 +542,27 @@ class PostDetail extends React.Component {
                 // </ListItem>
               ))}
             </List>
-            {this.props.isLogin === true ?
             <div>
+              {this.props.isLogin === false ?
+                <Grid container direction='row' justify='space-around'>
+                  <Grid item xs={6}>
+                    <TextField
+                      label='닉네임'
+                      value={this.state.writedCommentName}
+                      onChange={e => {this.setState({writedCommentName: e.target.value})}}/>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label='비밀번호'
+                      type='password'
+                      value={this.state.writedCommentPassword}
+                      onChange={e => {this.setState({writedCommentPassword: e.target.value})}}/>
+                  </Grid>
+                </Grid>
+              :
+                ''
+              }
+              <br/>
               <TextField
                 className={classes.commenTextarea}
                 id="outlined-multiline-static"
@@ -462,9 +583,7 @@ class PostDetail extends React.Component {
                 </Button>
               </div>
             </div>
-            :
-            ''}
-          </Paper>
+          </div>
           :
           ''
         }
@@ -479,4 +598,8 @@ const mapStateToProps = (state, ownProps) => ({
   ownProps
 })
 
-export default connect(mapStateToProps)(withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(PostDetail))));
+const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logout())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles, { withTheme: true })(withRouter(withSnackbar(PostDetail))));
