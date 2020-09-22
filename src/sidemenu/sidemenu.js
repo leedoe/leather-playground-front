@@ -9,6 +9,7 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import MapIcon from '@material-ui/icons/Map';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
+import DnsIcon from '@material-ui/icons/Dns';
 
 import { connect } from 'react-redux'
 import { logout } from '../redux/actions';
@@ -63,6 +64,7 @@ class SideMenu extends React.Component {
       this.props.handleDrawerToggle()
     }
     this.props.logout()
+    this.props.history.push('/')
   }
 
   clickProfile = () => {
@@ -140,6 +142,32 @@ class SideMenu extends React.Component {
               </ListItemIcon>
               <ListItemText primary={`쇼핑몰검색`}/>
             </ListItem>
+            <Divider/>
+            <ListItem button component={Link} to={`/leathers/`} onClick={this.props.handleDrawerToggle}>
+              <ListItemIcon>
+                <DnsIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`가죽정보`}/>
+            </ListItem>
+            <ListItem button component={Link} to={`/tannerys/`} onClick={this.props.handleDrawerToggle}>
+              <ListItemIcon>
+                <DnsIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`테너리`}/>
+            </ListItem>
+            <ListItem button component={Link} to={`/materials/`} onClick={this.props.handleDrawerToggle}>
+              <ListItemIcon>
+                <DnsIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`가죽재료`}/>
+            </ListItem>
+            <Divider/>
+            <ListItem button component={Link} to={`/suggestions/`} onClick={this.props.handleDrawerToggle}>
+              <ListItemIcon>
+                <CommentIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`건의 게시판`}/>
+            </ListItem>
           </Hidden>
           <Hidden xsDown implementation="css">
             <ListItem button component={Link} to={`/posts?page=1`}>
@@ -159,6 +187,32 @@ class SideMenu extends React.Component {
                 <FindInPageIcon/>
               </ListItemIcon>
               <ListItemText primary={`쇼핑몰검색`}/>
+            </ListItem>
+            <Divider/>
+            <ListItem button component={Link} to={`/leathers/`}>
+              <ListItemIcon>
+                <DnsIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`가죽`}/>
+            </ListItem>
+            <ListItem button component={Link} to={`/tannerys/`}>
+              <ListItemIcon>
+                <DnsIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`테너리`}/>
+            </ListItem>
+            <ListItem button component={Link} to={`/materials/`}>
+              <ListItemIcon>
+                <DnsIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`가죽재료`}/>
+            </ListItem>
+            <Divider/>
+            <ListItem button component={Link} to={`/suggestions/`}>
+              <ListItemIcon>
+                <CommentIcon/>
+              </ListItemIcon>
+              <ListItemText primary={`건의 게시판`}/>
             </ListItem>
           </Hidden>
         </List>

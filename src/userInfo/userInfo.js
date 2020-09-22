@@ -74,7 +74,7 @@ class UserInfo extends React.Component {
         <Backdrop className={classes.backdrop}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Paper className={classes.logindiv}>
+        <div className={classes.logindiv}>
           <form
             onSubmit={this.onPushLoginButton}
             noValidate
@@ -107,7 +107,7 @@ class UserInfo extends React.Component {
               수정
             </Button>
           </form>
-        </Paper>
+        </div>
       </div>
     )
   }

@@ -96,9 +96,9 @@ class LoginPage extends React.Component {
         this.props.setUser(user)
         this.setState({nowLoading: false})
         this.props.enqueueSnackbar('정상적으로 로그인 되었습니다.', {variant: 'success'})
-        this.props.history.replace('/posts')
+        this.props.history.go(-1)
       }).catch((e) => {
-        
+        this.props.enqueueSnackbar('서버와 통신이 원활하지 않습니다.', {variant: 'error'})
       })
   }
 
@@ -140,7 +140,7 @@ class LoginPage extends React.Component {
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Paper className={classes.logindiv}>
+        <div className={classes.logindiv}>
             <form
               onSubmit={this.onPushLoginButton}
               noValidate
@@ -176,7 +176,7 @@ class LoginPage extends React.Component {
                   회원가입
                 </Button>
             </form>
-        </Paper>
+        </div>
       </div>
     )
   }

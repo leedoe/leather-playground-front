@@ -121,7 +121,7 @@ class RegisterUser extends React.Component {
         <Backdrop className={classes.backdrop} open={this.state.nowLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Paper className={classes.logindiv}>
+        <div className={classes.logindiv}>
             <form
               onSubmit={this.onPushLoginButton}
               noValidate
@@ -156,7 +156,7 @@ class RegisterUser extends React.Component {
                   회원가입
                 </Button>
             </form>
-        </Paper>
+        </div>
       </div>
     )
   }

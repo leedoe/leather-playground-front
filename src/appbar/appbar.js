@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AppBar, CssBaseline, Toolbar, IconButton, Typography, withStyles } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 const useStyles = theme => ({
@@ -36,7 +37,13 @@ class LeatherAppBar extends React.Component {
                 className={classes.menuButton}>
                 <MenuIcon />
             </IconButton>
-            <Typography variant='h6'>{`CRAFTERS & MAKERS`}</Typography>
+            <Typography
+              variant='h6'
+              component={Link}
+              to={`/`}
+              style={{color: `white`}}>
+              {`CRAFTERS & MAKERS`}
+            </Typography>
             </Toolbar>
         </AppBar>
       </div>

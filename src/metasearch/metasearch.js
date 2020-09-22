@@ -94,7 +94,7 @@ class MetaSearch extends React.Component {
   render() {
     const {classes} = this.props
     return (
-      <Paper className={classes.paper}>
+      <div className={classes.paper}>
         <div className={classes.searchPannel}>
           <TextField
             id='search'
@@ -152,7 +152,7 @@ class MetaSearch extends React.Component {
           </div>
         </div>
         }
-      </Paper>
+      </div>
     )
   }
 }
